@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <limits.h>
 
 using namespace std;
 
@@ -13,6 +14,16 @@ using namespace std;
 #ifndef DEBUGMSG
 #define DEBUGMSG(msg) cout << "line: " << __LINE__ << " function: " << __func__ << " file: " << __FILE__ << ", message: " << msg << endl
 #endif
+
+/**
+ * @brief UPBOUND the upper bound of x and y
+ */
+#define UPBOUND INT_MAX
+
+/**
+ * @brief LOWBOUND the low bound of x and y
+ */
+#define LOWBOUND INT_MIN
 
 /**
  * @brief The orientation enum define the orientation of the half plane
@@ -26,6 +37,7 @@ enum orientation{
  * @brief The halfPlane struct for save the half plane
  */
 class vertex;
+class edge;
 class halfPlane{
 public :
     /**
@@ -43,7 +55,10 @@ public :
 
     halfPlane& operator = (const halfPlane& hp);
 
+    bool isIntersectWithEdge(const edge& e) const;
     bool isVertexOnHalfPlane(const vertex& v) const;
+    bool isEdgeOnHalfPlane(const edge& e) const;
+    vertex intersectPoint(const halfPlane& hp) const;
 
 private :
     void getOrientation();
@@ -99,6 +114,13 @@ public :
     polygon(const polygon& p);
 
     polygon& operator = (const polygon& p);
+
+    /**
+     * @brief intersectOfHalfPlane using a half plane to cut a polygon and obtain a new polygon
+     * @param hp
+     * @return
+     */
+    polygon intersectOfHalfPlane(const halfPlane& hp);
 };
 
 ostream& operator << (ostream& out, const vertex& v);

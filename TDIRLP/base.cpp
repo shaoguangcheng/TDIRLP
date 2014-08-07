@@ -1,6 +1,8 @@
 #include "base.h"
 #include "util.h"
 
+#include <stdlib.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * the defination of half plane
@@ -39,9 +41,43 @@ halfPlane& halfPlane::operator = (const halfPlane& hp)
     return *this;
 }
 
+bool halfPlane::isIntersectWithEdge(const edge& e) const
+{
+    return (
+            isVertexOnHalfPlane(e.start)&&
+            (!isVertexOnHalfPlane(e.end))
+           ) ||
+           (
+            (!isVertexOnHalfPlane(e.start))&&
+            (isVertexOnHalfPlane(e.end))
+           );
+}
+
 bool halfPlane::isVertexOnHalfPlane(const vertex &v) const
 {
     return notGreatThan(xCoef*v.x+yCoef*v.y+bias, 0);
+}
+
+bool halfPlane::isEdgeOnHalfPlane(const edge& e) const
+{
+    return isVertexOnHalfPlane(e.start)&&
+            isVertexOnHalfPlane(e.end);
+}
+
+vertex halfPlane::intersectPoint(const halfPlane& hp) const
+{
+    double tmp = xCoef*hp.yCoef - hp.xCoef*yCoef;
+
+    if(equal(tmp, 0)){
+        DEBUGMSG("two lines are parallel, they have no intersection");
+        exit(EXIT_FAILURE);
+    }
+
+    vertex intersection;
+    intersection.y = (xCoef*hp.bias - hp.xCoef*bias)*-1.0/tmp;
+    intersection.x = (yCoef*hp.bias - hp.yCoef*bias)*1.0/tmp;
+
+    return intersection;
 }
 
 void halfPlane::getOrientation()
@@ -269,6 +305,71 @@ polygon& polygon::operator = (const polygon& p)
 {
     edges = p.edges;
     vertice = p.vertice;
+
+    return *this;
+}
+
+polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
+{
+    list<edge>::iterator edgeIt;
+    list<vertex>::iterator vertexIt;
+
+    list<edge> _edges_(edges);
+
+    edges.clear();
+    vertice.clear();
+
+    edge e;
+    for(edgeIt = _edges_.begin();edgeIt != _edges_.end();edgeIt++){
+        e = *edgeIt;
+        /**
+         * if e on half plane, then save e
+         */
+        if(hp.isEdgeOnHalfPlane(e)){
+            edges.push_back(e);
+
+            size_t size = vertice.size();
+            if(size == size_t(0))
+                vertice.push_back(e.start);
+
+            vertice.push_back(e.end);
+        }
+
+        /**
+         * if e has intersection with half plane, then add a new edge to polygon
+         */
+        if(hp.isIntersectWithEdge(e)){
+            vertex intersection = hp.intersectPoint(e.line);
+
+            edge newE;
+            if(hp.isVertexOnHalfPlane(e.start)){
+
+                /**
+                 * if the direction of e is from on the half plane to not on the half plane
+                 */
+                 newE.start = e.start;
+                 newE.end   = intersection;
+                 newE.line  = e.line;
+            }
+            else{
+
+                /**
+                 * if the direction of e is from not on the half plane to on the half plane
+                 */
+                newE.start = intersection;
+                newE.end   = e.end;
+                newE.line   = e.line;
+            }
+
+            edges.push_back(newE);
+
+            size_t size = vertice.size();
+            if(size == size_t(0))
+                vertice.push_back(newE.start);
+
+            vertice.push_back(newE.end);
+        }
+    }
 
     return *this;
 }

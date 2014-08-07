@@ -14,6 +14,9 @@ void testHalfPlane()
         cout << "on" << endl;
     else
         cout << "not on" << endl;
+
+    halfPlane hp2(1,1,1);
+    cout << hp2.intersectPoint(hp) << endl;
 }
 
 
@@ -31,5 +34,10 @@ void testPolygon()
     polygon p(edges);
 
     cout << e1 << endl;
+    cout << p << endl;
+
+    halfPlane hp(1,-1,0);
+    p.intersectOfHalfPlane(hp);
+
     cout << p << endl;
 }
