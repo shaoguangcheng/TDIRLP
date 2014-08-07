@@ -1,7 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include <ostream>
+#include <iostream>
 #include <list>
 
 using namespace std;
@@ -10,12 +10,16 @@ using namespace std;
  * In this file, I define some useful data structure and variables.
  */
 
+#ifndef DEBUGMSG
+#define DEBUGMSG(msg) cout << "line: " << __LINE__ << " function: " << __func__ << " file: " << __FILE__ << ", message: " << msg << endl
+#endif
+
 /**
  * @brief The orientation enum define the orientation of the half plane
  */
 enum orientation{
-    left=0,
-    right
+    LEFT=0,
+    RIGHT
 };
 
 /**
@@ -32,8 +36,11 @@ public :
 
     orientation direction;
 
+    halfPlane();
     halfPlane(double xCoef, double yCoef, double bias);
-    halfPlane(const halfPlane* hp);
+    halfPlane(const halfPlane &hp);
+
+    halfPlane& operator = (const halfPlane& hp);
 
 private :
     void getOrientation();
@@ -48,16 +55,24 @@ public :
     vertex(double x, double y);
     vertex(const vertex& v);
 
+    vertex& operator = (const vertex& v);
+
 public :
     double x;
     double y;
 };
 
+/**
+ * @brief The edge class define the edge in polygon
+ */
 class edge{
 public :
     edge();
     edge(const vertex &start, const vertex &end);
+    edge(const vertex &start, const vertex &end, const halfPlane& line);
     edge(const edge &e);
+
+    edge& operator = (const edge& e);
 
     orientation getOrientation(const vertex& v) const;
 
@@ -67,9 +82,12 @@ public :
     halfPlane line;
 
 private :
-    halfPlane getLine(const vertex &start, const vertex &end) const;
+    void getHalfPlane();
 };
 
+/**
+ * @brief The polygon class define the polygon structure
+ */
 class polygon{
 public :
     list<edge> edges;
@@ -77,6 +95,8 @@ public :
 
     polygon(const list<edge>& edges);
     polygon(const polygon& p);
+
+    polygon& operator = (const polygon& p);
 };
 
 ostream& operator << (ostream& out, const vertex& v);

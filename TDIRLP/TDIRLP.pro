@@ -5,9 +5,11 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     base.cpp \
-    util.cpp
+    util.cpp \
+    test.cpp
 
 HEADERS += \
     base.h \
-    util.h
+    util.h \
+    test.h
 

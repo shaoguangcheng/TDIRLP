@@ -1,16 +1,16 @@
 #include "util.h"
 
-inline bool greater(double x, double y)
+bool greaterThan(double x, double y)
 {
     return x > y + EPS;
 }
 
-inline bool less(double x, double y)
+bool lessThan(double x, double y)
 {
     return x < y - EPS;
 }
 
-inline bool equal(double x, double y)
+bool equal(double x, double y)
 {
     return fabs(x-y) < EPS;
 }
