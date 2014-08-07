@@ -6,10 +6,12 @@ CONFIG -= qt
 SOURCES += main.cpp \
     base.cpp \
     util.cpp \
-    test.cpp
+    test.cpp \
+    TDLP.cpp
 
 HEADERS += \
     base.h \
     util.h \
-    test.h
+    test.h \
+    TDLP.h
 
