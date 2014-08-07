@@ -39,6 +39,11 @@ halfPlane& halfPlane::operator = (const halfPlane& hp)
     return *this;
 }
 
+bool halfPlane::isVertexOnHalfPlane(const vertex &v) const
+{
+    return notGreatThan(xCoef*v.x+yCoef*v.y+bias, 0);
+}
+
 void halfPlane::getOrientation()
 {
     double x0 = -1.0*bias/xCoef, y0 = -1.0*bias/yCoef;
@@ -229,8 +234,66 @@ edge& edge::operator = (const edge& e)
 
 void edge::getHalfPlane()
 {
+   double xCoef = end.y - start.y;
+   double yCoef = start.x - end.x;
+   double bias  = end.x*start.y - start.x*end.y;
 
+   halfPlane hp(xCoef, yCoef, bias);
+
+   line = hp;
 }
 
-orientation edge::getOrientation(const vertex &v) const
+//////////////////////////////////////////////////////////////////////////
+/**
+ * @brief polygon the defination of polygon
+ */
+polygon::polygon()
 {}
+
+polygon::polygon(const list<edge> &edges)
+    :edges(edges)
+{
+    list<edge>::const_iterator it = edges.begin();
+    this->vertice.push_back(it->start);
+
+    for(;it != edges.end();it++)
+        this->vertice.push_back(it->end);
+}
+
+polygon::polygon(const polygon &p) :
+    edges(p.edges),
+    vertice(p.vertice)
+{}
+
+polygon& polygon::operator = (const polygon& p)
+{
+    edges = p.edges;
+    vertice = p.vertice;
+
+    return *this;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+ostream& operator << (ostream& out, const vertex& v)
+{
+    out << "(" << v.x << "," << v.y << ")" << " ";
+    return out;
+}
+
+ostream& operator << (ostream& out, const edge& e)
+{
+    out << "from " << e.start << "to " << e.end;
+    return out;
+}
+
+ostream& operator << (ostream& out, const polygon& p)
+{
+    list<vertex>::const_iterator it = p.vertice.begin();
+
+    for(;it != p.vertice.end();it++)
+        out << *it;
+
+    return out;
+}
+
+////////////////////////////////////////////////////////////////////////////

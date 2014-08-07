@@ -25,6 +25,7 @@ enum orientation{
 /**
  * @brief The halfPlane struct for save the half plane
  */
+class vertex;
 class halfPlane{
 public :
     /**
@@ -41,6 +42,8 @@ public :
     halfPlane(const halfPlane &hp);
 
     halfPlane& operator = (const halfPlane& hp);
+
+    bool isVertexOnHalfPlane(const vertex& v) const;
 
 private :
     void getOrientation();
@@ -74,8 +77,6 @@ public :
 
     edge& operator = (const edge& e);
 
-    orientation getOrientation(const vertex& v) const;
-
 public :
     vertex start;
     vertex end;
@@ -93,6 +94,7 @@ public :
     list<edge> edges;
     list<vertex> vertice;
 
+    polygon();
     polygon(const list<edge>& edges);
     polygon(const polygon& p);
 
@@ -100,6 +102,7 @@ public :
 };
 
 ostream& operator << (ostream& out, const vertex& v);
+ostream& operator << (ostream& out, const edge& e);
 ostream& operator << (ostream& out, const polygon& p);
 
 #endif // BASE_H

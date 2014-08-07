@@ -5,4 +5,6 @@
 
 void testHalfPlane();
 
+void testPolygon();
+
 #endif // TEST_H

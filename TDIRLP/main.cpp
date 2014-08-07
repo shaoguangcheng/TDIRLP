@@ -5,8 +5,8 @@ using namespace std;
 
 int main()
 {
-    testHalfPlane();
-
+//    testHalfPlane();
+    testPolygon();
     return 0;
 }
 

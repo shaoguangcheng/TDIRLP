@@ -28,4 +28,20 @@ bool lessThan(double x, double y);
  */
 bool equal(double x, double y);
 
+/**
+ * @brief notGreatThan  if x <= y
+ * @param x
+ * @param y
+ * @return
+ */
+bool notGreatThan(double x, double y);
+
+/**
+ * @brief notLessThan if x >= y
+ * @param x
+ * @param y
+ * @return
+ */
+bool notLessThan(double x, double y);
+
 #endif // UTIL_H
