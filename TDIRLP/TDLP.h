@@ -6,6 +6,9 @@
 
 typedef class vertex point;
 typedef class halfPlane constraint;
+typedef vector<constraint> constraintSet;
+typedef vector<constraint>::iterator constraintIterator;
+typedef vector<constraint>::const_iterator constConstraintIterator;
 
 /**
  * @brief The stauts enum define the all posible condition of linear programming
@@ -14,7 +17,7 @@ enum stauts{
     noSolution = 0,
     unbounded,
     line,
-    vertex
+    singlePoint
 };
 
 /**
@@ -75,18 +78,32 @@ public:
 
     TDLP& operator = (const TDLP& tdlp);
 
-    void addConstraint(const constraint& c);
-    void delConstraint(const constraint& c);
+    void addConstraint(const constraint &c);
+    void delConstraint(const constraint &c);
     void setObjFunc(const objFunc& f);
 
+    /**
+     * @brief solve solve the TDIRLP problem
+     * @return
+     */
     solution solve();
 
+    constraintSet getConstraint() const;
+    objFunc getObjFunc() const;
+
 private :
-    vector<constraint> constraints;
+    /**
+     * @brief constraints all constraints of LP
+     */
+    constraintSet constraints;
+
+    /**
+     * @brief func the objective function of LP
+     */
     objFunc func;
 };
 
-
+ostream& operator << (ostream& out, const constraint& c);
 ostream& operator << (ostream& out, const solution& ans);
 ostream& operator << (ostream& out, const TDLP& tdlp);
 

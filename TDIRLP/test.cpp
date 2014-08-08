@@ -36,8 +36,23 @@ void testPolygon()
     cout << e1 << endl;
     cout << p << endl;
 
-    halfPlane hp(1,-1,0);
+    halfPlane hp(1,1,1);
     p.intersectOfHalfPlane(hp);
 
     cout << p << endl;
+}
+
+void testTDLP()
+{
+    TDLP tdlp;
+
+    constraint c1(1,-2,1);
+    constraint c2(3,2,1);
+    objFunc fun(1,2);
+
+    tdlp.addConstraint(c1);
+    tdlp.addConstraint(c2);
+    tdlp.setObjFunc(fun);
+
+    cout << tdlp << endl;
 }
