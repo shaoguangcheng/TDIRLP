@@ -1,7 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <math.h>
+#include <math.h>s
 
 #define EPS 1e-6
 
@@ -44,5 +44,20 @@ bool notGreatThan(double x, double y);
  * @return
  */
 bool notLessThan(double x, double y);
+
+
+template <class T>
+T findMax(const T* array, int N, int& index)
+{
+    T tmp = array[0];
+    for(int i=1; i < N;i++){
+        if(tmp < array[i]){
+            tmp = array[i];
+            index = i;
+        }
+    }
+
+    return array[index];
+}
 
 #endif // UTIL_H

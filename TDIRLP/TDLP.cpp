@@ -53,9 +53,116 @@ objFunc TDLP::getObjFunc() const
 
 solution TDLP::solve()
 {
-    solution s;
-    return s;
+    ////////////////////////////////////////////////////////////////////
+    /**
+     * the initial optimal point
+     */
+    vertex v1(LOWBOUND, UPBOUND);
+    vertex v2(UPBOUND, UPBOUND);
+    vertex v3(UPBOUND, LOWBOUND);
+    vertex v4(LOWBOUND, LOWBOUND);
+    vertex v[4] = {v1, v2, v3, v4};
+
+    double value[4];
+    for(int i=0;i<4;i++){
+        value[i] = func.getValue(v[i]);
+    }
+
+    int index = 0;
+    findMax(value, 4, index);
+
+    /**
+     * @brief ans the optimal solution of the LP
+     */
+    solution ans(v[index], value[index]);
+
+    /**
+     * define the boundary plane
+     */
+    edge e1(v1, v2);
+    edge e2(v2, v3);
+    edge e3(v3, v4);
+    edge e4(v4, v1);
+
+    list<edge> edges;
+    edges.push_back(e1);
+    edges.push_back(e2);
+    edges.push_back(e3);
+    edges.push_back(e4);
+
+    region feasibleRegion(edges);
+    /////////////////////////////////////////////////////////////////////
+
+    /**
+     * shuffle the constraints
+     */
+//    random_shuffle(constraints.begin(), constraints.end());
+
+    constConstraintIterator it;
+    for(it = constraints.begin(); it != constraints.end(); it++){
+        constraint c = *it;
+        if(c.isVertexOnHalfPlane(ans.getPoint())){
+
+            /**
+             * if current optimal vertex is on the half plane that is introduced newly
+             */
+
+            /**
+             * if current feasible region is only a point
+             */
+            if(feasibleRegion.vertice.size() == 1)
+                continue;
+
+            feasibleRegion.intersectOfHalfPlane(c);
+        }
+        else{
+
+            /**
+             *  if current optimal vertex has intersection with the new half plane,
+             *  then the optimal vertex must be on the boundary of the halfplane.
+             *
+             *  otherwise, the LP probelm is infeasible.
+             */
+            vertexSet optimalCandidateVertex;
+            feasibleRegion.intersectOfHalfPlane(c, optimalCandidateVertex);
+
+
+            size_t size = optimalCandidateVertex.size();
+
+            if(size == 0){
+                ans.setStatus(noSolution);
+                return ans;
+            }
+
+            if(size == 1){
+                double tmp = func.getValue(optimalCandidateVertex[0]);
+                ans.setSolution(optimalCandidateVertex[0], tmp, singlePoint);
+            }
+
+            if(size == 2){
+                vertex vl(optimalCandidateVertex[0]);
+                vertex vr(optimalCandidateVertex[1]);
+
+                double vlFuncValue = func.getValue(vl);
+                double vrFuncValue = func.getValue(vr);
+                if(equal(vlFuncValue, vrFuncValue)){
+                    ans.setSolution(vl, vlFuncValue, line);
+                }
+
+                if(greaterThan(vlFuncValue, vrFuncValue)){
+                    ans.setSolution(vl, vlFuncValue, singlePoint);
+                }
+                else{
+                    ans.setSolution(vr, vrFuncValue, singlePoint);
+                }
+            }
+
+        }
+    }
+
+    return ans;
 }
+
 
 ////////////////////////////////////////////////////////////
 ostream& operator << (ostream& out, const constraint& c)
@@ -81,8 +188,8 @@ ostream& operator << (ostream& out, const constraint& c)
 
 ostream& operator << (ostream& out, const solution& ans)
 {
-    out << "optimal solution : (" << ans.x << ", " << ans.y << ")" << endl;
-    out << "objective value  : " << ans.funcValue;
+    out << "optimal solution : " << ans.getPoint() << endl;
+    out << "objective value  : " << ans.getFuncValue();
     return out;
 }
 

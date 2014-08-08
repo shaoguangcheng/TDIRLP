@@ -10,4 +10,7 @@ void testPolygon();
 
 void testTDLP();
 
+void testFindMax();
+
+
 #endif // TEST_H

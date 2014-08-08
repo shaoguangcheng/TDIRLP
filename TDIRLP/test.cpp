@@ -2,7 +2,7 @@
 
 void testHalfPlane()
 {
-    halfPlane hp(-1,1,1);
+    halfPlane hp(1,-1,0);
 
     if(LEFT == hp.direction)
         cout << "left" << endl;
@@ -17,6 +17,8 @@ void testHalfPlane()
 
     halfPlane hp2(1,1,1);
     cout << hp2.intersectPoint(hp) << endl;
+
+    cout << 10*UPBOUND << " " << LOWBOUND << endl;
 }
 
 
@@ -35,10 +37,11 @@ void testPolygon()
 
     cout << e1 << endl;
     cout << p << endl;
-
-    halfPlane hp(1,1,1);
+    cout << p.edges.size() << endl;
+    halfPlane hp(1,-1,0);
     p.intersectOfHalfPlane(hp);
 
+    cout << p.edges.size() << endl;
     cout << p << endl;
 }
 
@@ -46,13 +49,28 @@ void testTDLP()
 {
     TDLP tdlp;
 
-    constraint c1(1,-2,1);
-    constraint c2(3,2,1);
-    objFunc fun(1,2);
+    constraint c1(2,3,-6);
+    constraint c2(3,2,-6);
+    constraint c3(-1,0,0);
+    constraint c4(0,-1,0);
+    objFunc fun(1,1);
 
     tdlp.addConstraint(c1);
     tdlp.addConstraint(c2);
+    tdlp.addConstraint(c3);
+    tdlp.addConstraint(c4);
     tdlp.setObjFunc(fun);
 
-    cout << tdlp << endl;
+    solution s = tdlp.solve();
+
+    cout << s << endl;
+}
+
+void testFindMax()
+{
+    double v[4] = {0,2000,0,-2000};
+    int index = 0;
+
+    cout << findMax(v,4,index) << endl;
+    cout << index << endl;
 }

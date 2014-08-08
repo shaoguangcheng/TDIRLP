@@ -3,7 +3,9 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <limits.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -12,18 +14,18 @@ using namespace std;
  */
 
 #ifndef DEBUGMSG
-#define DEBUGMSG(msg) cout << "line: " << __LINE__ << " function: " << __func__ << " file: " << __FILE__ << ", message: " << msg << endl
+#define DEBUGMSG(msg) cout << "line: " << __LINE__ /*<< ", function: " << __func__ */<< ", file: " << __FILE__ << ", message: " << msg << endl
 #endif
 
 /**
  * @brief UPBOUND the upper bound of x and y
  */
-#define UPBOUND INT_MAX
+#define UPBOUND (1e5*1.0)
 
 /**
  * @brief LOWBOUND the low bound of x and y
  */
-#define LOWBOUND INT_MIN
+#define LOWBOUND (1e5*-1.0)
 
 /**
  * @brief The orientation enum define the orientation of the half plane
@@ -57,6 +59,7 @@ public :
 
     bool isIntersectWithEdge(const edge& e) const;
     bool isVertexOnHalfPlane(const vertex& v) const;
+    bool isVertexOnBoundary(const vertex& v) const;
     bool isEdgeOnHalfPlane(const edge& e) const;
     vertex intersectPoint(const halfPlane& hp) const;
 
@@ -74,6 +77,9 @@ public :
     vertex(const vertex& v);
 
     vertex& operator = (const vertex& v);
+
+    bool operator == (const vertex& v) const;
+    bool operator != (const vertex& v) const;
 
 public :
     double x;
@@ -101,6 +107,8 @@ private :
     void getHalfPlane();
 };
 
+typedef vector<vertex> vertexSet;
+
 /**
  * @brief The polygon class define the polygon structure
  */
@@ -121,6 +129,7 @@ public :
      * @return
      */
     polygon intersectOfHalfPlane(const halfPlane& hp);
+    polygon intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectVertex);
 };
 
 ostream& operator << (ostream& out, const vertex& v);

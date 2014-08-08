@@ -9,6 +9,7 @@ int main()
 //    testHalfPlane();
 //    testPolygon();
     testTDLP();
+//    testFindMax();
     return 0;
 }
 

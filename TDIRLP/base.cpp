@@ -1,8 +1,6 @@
 #include "base.h"
 #include "util.h"
 
-#include <stdlib.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * the defination of half plane
@@ -50,12 +48,21 @@ bool halfPlane::isIntersectWithEdge(const edge& e) const
            (
             (!isVertexOnHalfPlane(e.start))&&
             (isVertexOnHalfPlane(e.end))
+           ) ||
+           (
+            (isVertexOnBoundary(e.start))&&
+            (isVertexOnBoundary(e.end))
            );
 }
 
 bool halfPlane::isVertexOnHalfPlane(const vertex &v) const
 {
     return notGreatThan(xCoef*v.x+yCoef*v.y+bias, 0.0);
+}
+
+bool halfPlane::isVertexOnBoundary(const vertex& v) const
+{
+    return equal(xCoef*v.x+yCoef*v.y+bias, 0.0);
 }
 
 bool halfPlane::isEdgeOnHalfPlane(const edge& e) const
@@ -231,6 +238,16 @@ vertex& vertex::operator = (const vertex& v)
     return *this;
 }
 
+bool vertex::operator == (const vertex& v) const
+{
+    return equal(x, v.x)&&equal(y, v.y);
+}
+
+bool vertex::operator != (const vertex& v) const
+{
+    return (!equal(x, v.x))||(!equal(y, v.y));
+}
+
 /////////////////////////////////////////////////////////////////////
 /**
  * @brief edge the defination of edge
@@ -311,6 +328,12 @@ polygon& polygon::operator = (const polygon& p)
 
 polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
 {
+    vertexSet vs;
+    return intersectOfHalfPlane(hp, vs);
+}
+
+polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectVertex)
+{
     list<edge>::iterator edgeIt;
     list<vertex>::iterator vertexIt;
 
@@ -325,7 +348,10 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
         /**
          * if e on half plane, then save e
          */
-        if(hp.isEdgeOnHalfPlane(e)){
+        if(hp.isEdgeOnHalfPlane(e)&&
+                (!(hp.isVertexOnBoundary(e.start)&&
+                   (hp.isVertexOnBoundary(e.end))))
+                ){
             edges.push_back(e);
 
             size_t size = vertice.size();
@@ -339,7 +365,14 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
          * if e has intersection with half plane, then add a new edge to polygon
          */
         if(hp.isIntersectWithEdge(e)){
+            if(hp.isVertexOnBoundary(e.start)&&(hp.isVertexOnBoundary(e.end))){
+                edges.push_back(e);
+                vertice.push_back(e.end);
+                continue;
+            }
+
             vertex intersection = hp.intersectPoint(e.line);
+            intersectVertex.push_back(intersection);
 
             edge newE;
             if(hp.isVertexOnHalfPlane(e.start)){
@@ -361,14 +394,34 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
                 newE.line   = e.line;
             }
 
-            edges.push_back(newE);
+            if(newE.start != newE.end){
+                edges.push_back(newE);
 
-            size_t size = vertice.size();
-            if(size == size_t(0))
-                vertice.push_back(newE.start);
+                size_t size = vertice.size();
+                if(size == size_t(0))
+                    vertice.push_back(newE.start);
+            }
 
-            vertice.push_back(newE.end);
+            if(0 == vertice.size())
+                 vertice.push_back(newE.end);
+            else
+                if(vertice.back() != newE.end)
+                    vertice.push_back(newE.end);
         }
+    }
+
+    /**
+     * if the intersecyion is one of the vertice of polygon, then it must repeat
+     */
+    if(2 == intersectVertex.size())
+        if(intersectVertex[0] == intersectVertex[1]){
+            intersectVertex.pop_back();
+        }
+
+    if(vertice.size() >= 3){
+        e = edges.back();
+        if(e.end != vertice.front())
+            edges.push_back(edge(e.end, vertice.front()));
     }
 
     return *this;
@@ -389,6 +442,18 @@ ostream& operator << (ostream& out, const edge& e)
 
 ostream& operator << (ostream& out, const polygon& p)
 {
+    if(p.vertice.size() == 0){
+        DEBUGMSG("The vertice number of the polygon is zero. It is not a polygon anymore");
+    }
+
+    if(p.vertice.size() == 1){
+        DEBUGMSG("The vertice number of the polygon is one. It becomes a point");
+    }
+
+    if(p.vertice.size() == 2){
+        DEBUGMSG("The vertice number of the polygon is two. It becomes a line");
+    }
+
     list<vertex>::const_iterator it = p.vertice.begin();
 
     for(;it != p.vertice.end();it++)

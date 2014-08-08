@@ -7,6 +7,7 @@
 
 typedef class vertex point;
 typedef class halfPlane constraint;
+typedef class polygon region;
 typedef vector<constraint> constraintSet;
 typedef vector<constraint>::iterator constraintIterator;
 typedef vector<constraint>::const_iterator constConstraintIterator;
@@ -14,7 +15,7 @@ typedef vector<constraint>::const_iterator constConstraintIterator;
 /**
  * @brief The stauts enum define the all posible condition of linear programming
  */
-enum stauts{
+enum statusLP{
     noSolution = 0,
     unbounded,
     line,
@@ -48,11 +49,13 @@ public :
  * @brief The solution struct the optimal feasible solution of two dimentional incremental random linear programming
  */
 class solution{
-public :
+private :
     double x;
     double y;
     double funcValue;
+    statusLP status;
 
+public :
     solution(){}
 
     solution(double x, double y, double funcValue) :
@@ -66,6 +69,44 @@ public :
     solution(const solution& s) :
         x(s.x),y(s.y),funcValue(s.funcValue)
     {}
+
+    inline void setSolution(const point& p, double value, statusLP s)
+    {
+        x = p.x;
+        y = p.y;
+        funcValue = value;
+        status = s;
+    }
+
+    inline void setStatus(statusLP s)
+    {
+        status = s;
+    }
+
+    inline double getFuncValue() const
+    {
+        if(status == noSolution){
+            DEBUGMSG("Linear Programming problem has no feasible solution");
+            exit(EXIT_FAILURE);
+        }
+
+        return funcValue;
+    }
+
+    inline point getPoint() const
+    {
+        if(status == noSolution){
+            DEBUGMSG("Linear Programming problem has no feasible solution");
+            exit(EXIT_FAILURE);
+        }
+
+        return point(x, y);
+    }
+
+    inline statusLP getStatus() const
+    {
+        return status;
+    }
 };
 
 struct isConstraintIndentical : public binary_function <constraint, constraint, bool>
