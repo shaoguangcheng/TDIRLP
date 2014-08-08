@@ -27,6 +27,7 @@ bool lessThan(double x, double y);
  * @param y
  */
 bool equal(double x, double y);
+//bool equal(const double& x, const double& y);
 
 /**
  * @brief notGreatThan  if x <= y

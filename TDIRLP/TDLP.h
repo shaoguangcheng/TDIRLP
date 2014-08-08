@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "base.h"
+#include "util.h"
 
 typedef class vertex point;
 typedef class halfPlane constraint;
@@ -65,6 +66,42 @@ public :
     solution(const solution& s) :
         x(s.x),y(s.y),funcValue(s.funcValue)
     {}
+};
+
+struct isConstraintIndentical : public binary_function <constraint, constraint, bool>
+{
+    /**
+     * @brief operator () here must be careful : in order to define a correct functor, the overloaded
+     *                                           operator ()  must be defined as const function
+     * @param c1
+     * @param c2
+     * @return
+     */
+    bool operator () (const constraint& c1, const constraint& c2) const /*'const' can not be neglected*/{
+        return equal(c1.xCoef, c2.xCoef)&&
+                equal(c1.yCoef, c2.yCoef)&&
+                equal(c1.bias, c2.bias);
+    }
+};
+
+/**
+ * another solution for compare constraint
+ */
+class _isConstraintIndentical_ : public unary_function <constraint, bool>
+{
+public :
+    _isConstraintIndentical_(constraint c) :
+        c(c)
+    {}
+
+    bool operator () (const constraint& c) const {
+        return equal(this->c.xCoef, c.xCoef)&&
+                equal(this->c.yCoef, c.yCoef)&&
+                equal(this->c.bias, c.bias);
+    }
+
+private :
+    constraint c;
 };
 
 /**

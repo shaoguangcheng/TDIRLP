@@ -12,7 +12,7 @@ halfPlane::halfPlane()
 
 halfPlane::halfPlane(double xCoef, double yCoef, double bias)
 {
-    if(equal(0, xCoef)&&equal(0, yCoef)){
+    if(equal(0.0, xCoef)&&equal(0.0, yCoef)){
         DEBUGMSG("xCoef and yCoef can not be zero in the same time");
         return;
     }
@@ -55,7 +55,7 @@ bool halfPlane::isIntersectWithEdge(const edge& e) const
 
 bool halfPlane::isVertexOnHalfPlane(const vertex &v) const
 {
-    return notGreatThan(xCoef*v.x+yCoef*v.y+bias, 0);
+    return notGreatThan(xCoef*v.x+yCoef*v.y+bias, 0.0);
 }
 
 bool halfPlane::isEdgeOnHalfPlane(const edge& e) const
@@ -68,7 +68,7 @@ vertex halfPlane::intersectPoint(const halfPlane& hp) const
 {
     double tmp = xCoef*hp.yCoef - hp.xCoef*yCoef;
 
-    if(equal(tmp, 0)){
+    if(equal(tmp, 0.0)){
         DEBUGMSG("two lines are parallel, they have no intersection");
         exit(EXIT_FAILURE);
     }
@@ -87,7 +87,7 @@ void halfPlane::getOrientation()
     /**
      * if yCoef*y <= 0
      */
-    if(equal(0, bias)&&equal(0, xCoef)){
+    if(equal(0.0, bias)&&equal(0.0, xCoef)){
         if(lessThan(yCoef, 0)){
             direction = LEFT;
             goto end;
@@ -101,8 +101,8 @@ void halfPlane::getOrientation()
     /**
      * if yCoef*y+bias <= 0
      */
-    if(equal(0, xCoef)){
-        if(greaterThan(yCoef, 0)){
+    if(equal(0.0, xCoef)){
+        if(greaterThan(yCoef, 0.0)){
             direction = RIGHT;
             goto end;
         }
@@ -115,8 +115,8 @@ void halfPlane::getOrientation()
     /**
      * if xCoef*x <= 0
      */
-    if(equal(0, bias)&&equal(0, yCoef)){
-        if(lessThan(xCoef, 0)){
+    if(equal(0.0, bias)&&equal(0.0, yCoef)){
+        if(lessThan(xCoef, 0.0)){
             direction = RIGHT;
             goto end;
         }
@@ -129,8 +129,8 @@ void halfPlane::getOrientation()
     /**
      * if xCoef*x+bias <= 0
      */
-    if(equal(0, yCoef)){
-        if(greaterThan(xCoef, 0)){
+    if(equal(0.0, yCoef)){
+        if(greaterThan(xCoef, 0.0)){
             direction = LEFT;
             goto end;
         }
@@ -143,8 +143,8 @@ void halfPlane::getOrientation()
     /**
      * if xCoef*x+yCoef*y <= 0
      */
-    if(equal(0, bias)){
-        if(lessThan(xCoef, 0)){
+    if(equal(0.0, bias)){
+        if(lessThan(xCoef, 0.0)){
             direction = RIGHT;
             goto end;
         }
@@ -157,8 +157,8 @@ void halfPlane::getOrientation()
     /**
      * if xCoef*x+yCoef*y+bias <= 0
      */
-    if(greaterThan(x0, 0)&&greaterThan(y0, 0)){
-        if(greaterThan(bias, 0)){
+    if(greaterThan(x0, 0.0)&&greaterThan(y0, 0.0)){
+        if(greaterThan(bias, 0.0)){
             direction = RIGHT;
             goto end;
         }
@@ -168,8 +168,8 @@ void halfPlane::getOrientation()
         }
     }
 
-    if(lessThan(x0, 0)&&greaterThan(y0, 0)){
-        if(greaterThan(bias, 0)){
+    if(lessThan(x0, 0.0)&&greaterThan(y0, 0.0)){
+        if(greaterThan(bias, 0.0)){
             direction = LEFT;
             goto end;
         }
@@ -179,8 +179,8 @@ void halfPlane::getOrientation()
         }
     }
 
-    if(lessThan(x0, 0)&&lessThan(y0, 0)){
-        if(greaterThan(bias, 0)){
+    if(lessThan(x0, 0.0)&&lessThan(y0, 0.0)){
+        if(greaterThan(bias, 0.0)){
             direction = LEFT;
             goto end;
         }
@@ -190,8 +190,8 @@ void halfPlane::getOrientation()
         }
     }
 
-    if(greaterThan(x0, 0)&&lessThan(y0, 0)){
-        if(greaterThan(bias, 0)){
+    if(greaterThan(x0, 0.0)&&lessThan(y0, 0.0)){
+        if(greaterThan(bias, 0.0)){
             direction = RIGHT;
             goto end;
         }

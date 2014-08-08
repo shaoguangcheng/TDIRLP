@@ -1,5 +1,4 @@
 #include "TDLP.h"
-#include "util.h"
 
 #include <stdio.h>
 #include <algorithm>
@@ -30,7 +29,11 @@ void TDLP::addConstraint(const constraint& c)
 
 void TDLP::delConstraint(const constraint& c)
 {
-
+    constraintIterator it = find_if(constraints.begin(), constraints.end(),
+                                    bind2nd(isConstraintIndentical(), c));
+    if(it != constraints.end()){
+        constraints.erase(it);
+    }
 }
 
 void TDLP::setObjFunc(const objFunc &f)
@@ -50,7 +53,8 @@ objFunc TDLP::getObjFunc() const
 
 solution TDLP::solve()
 {
-
+    solution s;
+    return s;
 }
 
 ////////////////////////////////////////////////////////////
@@ -87,12 +91,18 @@ ostream& operator << (ostream& out, const TDLP& tdlp)
     const constraintSet constraints = tdlp.getConstraint();
     const objFunc func = tdlp.getObjFunc();
 
+    /**
+     *  output the constaints
+     */
     constConstraintIterator it;
     out << "constraints : " << endl;
     for(it = constraints.begin();it != constraints.end();it++){
         out << *it << endl;
     }
 
+    /**
+     * output the objective function
+     */
     char* fmt = new char [100];
 
     sprintf(fmt, "f=");
