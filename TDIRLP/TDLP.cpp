@@ -53,6 +53,13 @@ objFunc TDLP::getObjFunc() const
     return func;
 }
 
+void TDLP::clear()
+{
+    constraints.clear();
+    func.xCoef = 0;
+    func.yCoef = 0;
+}
+
 solution TDLP::solve()
 {
     ////////////////////////////////////////////////////////////////////
@@ -162,6 +169,13 @@ solution TDLP::solve()
     return ans;
 }
 
+/**
+ * @brief TDLP::updateOptimalSolution if c has intersection with the feasible region, then need to update the optimal solution
+ *                                    otherwise, the LP has no feasible solution.
+ * @param feasibleRegion
+ * @param c
+ * @param ans
+ */
 void TDLP::updateOptimalSolution(region& feasibleRegion, constraint& c, solution& ans)
 {
     vertexSet optimalCandidateVertex;
@@ -213,6 +227,10 @@ void TDLP::updateOptimalSolution(region& feasibleRegion, constraint& c, solution
             }
 
             if(equal(maxVal, ans.getFuncValue())){
+                /**
+                 * if current optimal value is equal to last optimal value, then the status of last optimal is single line
+                 * and current optimal vertex is on that line
+                 */
                 edge e(ans.getEdge());
                 if(c.isVertexOnHalfPlane(e.start))
                     ans.setSolution(edge(e.start, maxVertex), maxVal, singleLine);

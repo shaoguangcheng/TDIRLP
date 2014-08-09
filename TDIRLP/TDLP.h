@@ -247,6 +247,7 @@ public:
 
     constraintSet getConstraint() const;
     objFunc getObjFunc() const;
+    void clear();
 
 private :
     void updateOptimalSolution(region& feasibleRegion, constraint &c, solution& ans);

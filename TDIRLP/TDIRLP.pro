@@ -1,17 +1,25 @@
 TEMPLATE = app
-CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+
+
+QT       += core gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 SOURCES += main.cpp \
     base.cpp \
     util.cpp \
     test.cpp \
-    TDLP.cpp
+    TDLP.cpp \
+    qcustomplot.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     base.h \
     util.h \
     test.h \
-    TDLP.h
+    TDLP.h \
+    qcustomplot.h \
+    mainwindow.h
+
+FORMS += \
+    mainwindow.ui
 
