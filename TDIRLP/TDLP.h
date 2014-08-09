@@ -18,7 +18,7 @@ typedef vector<constraint>::const_iterator constConstraintIterator;
 enum statusLP{
     noSolution = 0,
     unbounded,
-    line,
+    singleLine,
     singlePoint
 };
 
@@ -50,32 +50,79 @@ public :
  */
 class solution{
 private :
-    double x;
-    double y;
+    point optimalPoint;
+    edge optimalEdge;
+
     double funcValue;
     statusLP status;
 
 public :
     solution(){}
 
-    solution(double x, double y, double funcValue) :
-        x(x),y(y),funcValue(funcValue)
+    solution(const point& v, double funcValue) :
+        optimalPoint(v),funcValue(funcValue), status(singlePoint)
     {}
 
-    solution(const point& v, double funcValue) :
-        x(v.x),y(v.y),funcValue(funcValue)
+    solution(const edge& e, double funcValue) :
+        optimalEdge(e), funcValue(funcValue), status(singleLine)
     {}
 
     solution(const solution& s) :
-        x(s.x),y(s.y),funcValue(s.funcValue)
-    {}
-
-    inline void setSolution(const point& p, double value, statusLP s)
+        status(s.getStatus())
     {
-        x = p.x;
-        y = p.y;
-        funcValue = value;
-        status = s;
+        if(status == singlePoint){
+            funcValue = s.funcValue;
+            optimalPoint = s.getPoint();
+        }
+
+        if(status == singleLine){
+            funcValue = s.funcValue;
+            optimalEdge  = s.getEdge();
+        }
+
+        if(status == unbounded){
+            funcValue = s.funcValue;
+        }
+    }
+
+    void setSolution(const point& p, double value, statusLP s)
+    {
+        if(s == singlePoint){
+            optimalPoint = p;
+            funcValue = value;
+            status = s;
+        }
+        else{
+            DEBUGMSG("solution status can not match");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    void setSolution(const edge& e, double value, statusLP s)
+    {
+        if(s == singleLine){
+            optimalEdge = e;
+            funcValue   = value;
+            status = s;
+        }
+        else{
+            DEBUGMSG("solution status can not match");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    void setSolution(statusLP s)
+    {
+        if(s == unbounded){
+            funcValue   = numeric_limits<double>::infinity();
+            status = s;
+        }
+        else if(s == noSolution){
+            status = s;
+        }else{
+            DEBUGMSG("solution status can not match");
+            exit(EXIT_FAILURE);
+        }
     }
 
     inline void setStatus(statusLP s)
@@ -95,12 +142,22 @@ public :
 
     inline point getPoint() const
     {
-        if(status == noSolution){
-            DEBUGMSG("Linear Programming problem has no feasible solution");
+        if(status == singlePoint)
+            return optimalPoint;
+        else{
+            DEBUGMSG("solution status can not match");
             exit(EXIT_FAILURE);
         }
+    }
 
-        return point(x, y);
+    inline edge getEdge() const
+    {
+        if(status == singleLine)
+            return optimalEdge;
+        else{
+            DEBUGMSG("solution status can not match");
+            exit(EXIT_FAILURE);
+        }
     }
 
     inline statusLP getStatus() const
@@ -181,7 +238,9 @@ private :
     objFunc func;
 };
 
+#if 0
 ostream& operator << (ostream& out, const constraint& c);
+#endif
 ostream& operator << (ostream& out, const solution& ans);
 ostream& operator << (ostream& out, const TDLP& tdlp);
 

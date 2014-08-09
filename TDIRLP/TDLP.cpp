@@ -126,7 +126,6 @@ solution TDLP::solve()
             vertexSet optimalCandidateVertex;
             feasibleRegion.intersectOfHalfPlane(c, optimalCandidateVertex);
 
-
             size_t size = optimalCandidateVertex.size();
 
             if(size == 0){
@@ -146,18 +145,27 @@ solution TDLP::solve()
                 double vlFuncValue = func.getValue(vl);
                 double vrFuncValue = func.getValue(vr);
                 if(equal(vlFuncValue, vrFuncValue)){
-                    ans.setSolution(vl, vlFuncValue, line);
-                }
-
-                if(greaterThan(vlFuncValue, vrFuncValue)){
-                    ans.setSolution(vl, vlFuncValue, singlePoint);
-                }
-                else{
-                    ans.setSolution(vr, vrFuncValue, singlePoint);
-                }
+                    ans.setSolution(edge(vl,vr), vlFuncValue, singleLine);
+                }else
+                    if(greaterThan(vlFuncValue, vrFuncValue)){
+                        ans.setSolution(vl, vlFuncValue, singlePoint);
+                    }
+                    else{
+                        ans.setSolution(vr, vrFuncValue, singlePoint);
+                    }
             }
 
         }
+    }
+
+    statusLP s = ans.getStatus();
+    if(s == singlePoint){
+        vertex vp(ans.getPoint());
+        if(equal(vp.x,UPBOUND)||
+                equal(vp.x, LOWBOUND)||
+                equal(vp.y, UPBOUND)||
+                equal(vp.y,LOWBOUND))
+            ans.setSolution(unbounded);
     }
 
     return ans;
@@ -165,6 +173,7 @@ solution TDLP::solve()
 
 
 ////////////////////////////////////////////////////////////
+#if 0
 ostream& operator << (ostream& out, const constraint& c)
 {
     char* fmt = new char[100];
@@ -185,11 +194,32 @@ ostream& operator << (ostream& out, const constraint& c)
 
     return out;
 }
+#endif
 
 ostream& operator << (ostream& out, const solution& ans)
 {
-    out << "optimal solution : " << ans.getPoint() << endl;
-    out << "objective value  : " << ans.getFuncValue();
+    statusLP s = ans.getStatus();
+    switch(s){
+    case noSolution :
+        out << "no feasible solution";
+        break;
+    case singlePoint :
+        out << "status : the optimal solution is a point" << endl;
+        out << "optimal solution : " << ans.getPoint() << endl;
+        out << "objective value  : " << ans.getFuncValue();
+        break;
+    case singleLine :
+        out << "status : the optimal solution is a line" << endl;
+        out << "optimal solution : " << ans.getEdge() << endl;
+        out << "objective value  : " << ans.getFuncValue();
+        break;
+    case unbounded :
+        out << "status : the LP problem has no solution" << endl;
+        out << "objective value : " << ans.getFuncValue();
+        break;
+    default :
+        break;
+    }
     return out;
 }
 
@@ -210,9 +240,9 @@ ostream& operator << (ostream& out, const TDLP& tdlp)
     /**
      * output the objective function
      */
-    char* fmt = new char [100];
+    char* fmt = new char [200];
 
-    sprintf(fmt, "f=");
+    sprintf(fmt, "max f= max ");
 
     if(!equal(func.xCoef, 0))
         sprintf(fmt, "%s%lfx", fmt, func.xCoef);

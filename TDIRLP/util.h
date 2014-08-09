@@ -1,7 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <math.h>s
+#include <math.h>
+
 
 #define EPS 1e-6
 

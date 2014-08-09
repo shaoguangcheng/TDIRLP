@@ -38,7 +38,7 @@ void testPolygon()
     cout << e1 << endl;
     cout << p << endl;
     cout << p.edges.size() << endl;
-    halfPlane hp(1,-1,0);
+    halfPlane hp(0,-1,0.5);
     p.intersectOfHalfPlane(hp);
 
     cout << p.edges.size() << endl;
@@ -49,20 +49,25 @@ void testTDLP()
 {
     TDLP tdlp;
 
-    constraint c1(2,3,-6);
-    constraint c2(3,2,-6);
-    constraint c3(-1,0,0);
-    constraint c4(0,-1,0);
+    constraint c1(-1,0,0);
+    constraint c2(0,-1,0);
+    constraint c3(1,1,-1);
+//    constraint c4(-1,0,0);
+//    constraint c5(0,-1,0);
     objFunc fun(1,1);
 
     tdlp.addConstraint(c1);
     tdlp.addConstraint(c2);
     tdlp.addConstraint(c3);
-    tdlp.addConstraint(c4);
+//    tdlp.addConstraint(c4);
+//    tdlp.addConstraint(c5);
     tdlp.setObjFunc(fun);
 
     solution s = tdlp.solve();
 
+    cout << "=====================" << endl;
+    cout << tdlp << endl;
+    cout << "=====================" << endl;
     cout << s << endl;
 }
 

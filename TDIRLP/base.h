@@ -4,8 +4,9 @@
 #include <iostream>
 #include <list>
 #include <vector>
-#include <limits.h>
+#include <limits>
 #include <stdlib.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -20,12 +21,12 @@ using namespace std;
 /**
  * @brief UPBOUND the upper bound of x and y
  */
-#define UPBOUND (1e5*1.0)
+#define UPBOUND (1e6*1.0)
 
 /**
  * @brief LOWBOUND the low bound of x and y
  */
-#define LOWBOUND (1e5*-1.0)
+#define LOWBOUND (1e6*-1.0)
 
 /**
  * @brief The orientation enum define the orientation of the half plane
@@ -135,5 +136,5 @@ public :
 ostream& operator << (ostream& out, const vertex& v);
 ostream& operator << (ostream& out, const edge& e);
 ostream& operator << (ostream& out, const polygon& p);
-
+ostream& operator << (ostream& out, const halfPlane& c);
 #endif // BASE_H

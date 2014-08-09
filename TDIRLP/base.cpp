@@ -342,9 +342,9 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectV
     edges.clear();
     vertice.clear();
 
-    edge e;
+
     for(edgeIt = _edges_.begin();edgeIt != _edges_.end();edgeIt++){
-        e = *edgeIt;
+        edge e(*edgeIt);
         /**
          * if e on half plane, then save e
          */
@@ -352,8 +352,6 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectV
                 (!(hp.isVertexOnBoundary(e.start)&&
                    (hp.isVertexOnBoundary(e.end))))
                 ){
-            edges.push_back(e);
-
             size_t size = vertice.size();
             if(size == size_t(0))
                 vertice.push_back(e.start);
@@ -366,7 +364,6 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectV
          */
         if(hp.isIntersectWithEdge(e)){
             if(hp.isVertexOnBoundary(e.start)&&(hp.isVertexOnBoundary(e.end))){
-                edges.push_back(e);
                 vertice.push_back(e.end);
                 continue;
             }
@@ -374,54 +371,53 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectV
             vertex intersection = hp.intersectPoint(e.line);
             intersectVertex.push_back(intersection);
 
-            edge newE;
             if(hp.isVertexOnHalfPlane(e.start)){
 
                 /**
                  * if the direction of e is from on the half plane to not on the half plane
                  */
-                 newE.start = e.start;
-                 newE.end   = intersection;
-                 newE.line  = e.line;
+                 size_t size = vertice.size();
+                 if(size == size_t(0)){
+                     vertice.push_back(e.start);
+                     if(e.start != intersection)
+                        vertice.push_back(intersection);
+                 }
+                 else{
+                     if(intersection != vertice.back())
+                        vertice.push_back(intersection);
+                 }
             }
             else{
 
                 /**
                  * if the direction of e is from not on the half plane to on the half plane
                  */
-                newE.start = intersection;
-                newE.end   = e.end;
-                newE.line   = e.line;
+                vertice.push_back(intersection);
+                if(e.end != intersection)
+                    vertice.push_back(e.end);
             }
-
-            if(newE.start != newE.end){
-                edges.push_back(newE);
-
-                size_t size = vertice.size();
-                if(size == size_t(0))
-                    vertice.push_back(newE.start);
-            }
-
-            if(0 == vertice.size())
-                 vertice.push_back(newE.end);
-            else
-                if(vertice.back() != newE.end)
-                    vertice.push_back(newE.end);
         }
     }
 
     /**
-     * if the intersecyion is one of the vertice of polygon, then it must repeat
+     * if the intersection is one of the vertice of polygon, then it must repeat
      */
     if(2 == intersectVertex.size())
         if(intersectVertex[0] == intersectVertex[1]){
             intersectVertex.pop_back();
+            vertice.pop_back();
         }
 
-    if(vertice.size() >= 3){
-        e = edges.back();
-        if(e.end != vertice.front())
-            edges.push_back(edge(e.end, vertice.front()));
+    if(vertice.back() != vertice.front())
+        vertice.push_back(vertice.front());
+
+    vertexIt = vertice.begin();
+    vertex v(*vertexIt);
+    vertexIt++;
+    for(;vertexIt != vertice.end(); vertexIt++){
+        edge e(v, *vertexIt);
+        edges.push_back(e);
+        v = *vertexIt;
     }
 
     return *this;
@@ -462,4 +458,24 @@ ostream& operator << (ostream& out, const polygon& p)
     return out;
 }
 
+ostream& operator << (ostream& out, const halfPlane& c)
+{
+    char* fmt = new char[100];
+
+    if(!equal(c.xCoef, 0))
+        sprintf(fmt, "%lfx", c.xCoef);
+
+    if(greaterThan(c.yCoef, 0))
+        sprintf(fmt, "%s+%lfy", fmt, c.yCoef);
+
+    if(lessThan(c.yCoef, 0))
+        sprintf(fmt, "%s-%lfy", fmt, -1*c.yCoef);
+
+    sprintf(fmt, "%s<=%lf", fmt, -1*c.bias);
+    out << fmt;
+
+    delete [] fmt;
+
+    return out;
+}
 ////////////////////////////////////////////////////////////////////////////
