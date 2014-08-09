@@ -51,15 +51,15 @@ void testTDLP()
 
     constraint c1(-1,0,0);
     constraint c2(0,-1,0);
-    constraint c3(1,1,-1);
-//    constraint c4(-1,0,0);
+    constraint c3(1,2,-8);
+    constraint c4(3,1,-9);
 //    constraint c5(0,-1,0);
-    objFunc fun(1,1);
+    objFunc fun(2,3);
 
     tdlp.addConstraint(c1);
     tdlp.addConstraint(c2);
     tdlp.addConstraint(c3);
-//    tdlp.addConstraint(c4);
+    tdlp.addConstraint(c4);
 //    tdlp.addConstraint(c5);
     tdlp.setObjFunc(fun);
 

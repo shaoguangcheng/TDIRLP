@@ -137,4 +137,5 @@ ostream& operator << (ostream& out, const vertex& v);
 ostream& operator << (ostream& out, const edge& e);
 ostream& operator << (ostream& out, const polygon& p);
 ostream& operator << (ostream& out, const halfPlane& c);
+
 #endif // BASE_H

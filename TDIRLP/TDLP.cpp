@@ -1,8 +1,10 @@
-#include "TDLP.h"
+
 
 #include <stdio.h>
 #include <algorithm>
 #include <string.h>
+
+#include "TDLP.h"
 
 TDLP::TDLP()
 {
@@ -96,68 +98,57 @@ solution TDLP::solve()
     /**
      * shuffle the constraints
      */
-//    random_shuffle(constraints.begin(), constraints.end());
+    random_shuffle(constraints.begin(), constraints.end());
 
     constConstraintIterator it;
     for(it = constraints.begin(); it != constraints.end(); it++){
         constraint c = *it;
-        if(c.isVertexOnHalfPlane(ans.getPoint())){
 
-            /**
-             * if current optimal vertex is on the half plane that is introduced newly
-             */
+        if(ans.getStatus() == singleLine){
+            edge e(ans.getEdge());
+            if(c.isEdgeOnHalfPlane(e)){
+                feasibleRegion.intersectOfHalfPlane(c);
+            }
+            else{
+                updateOptimalSolution(feasibleRegion, c, ans);
+            }
 
-            /**
-             * if current feasible region is only a point
-             */
-            if(feasibleRegion.vertice.size() == 1)
-                continue;
-
-            feasibleRegion.intersectOfHalfPlane(c);
+            continue;
         }
-        else{
 
-            /**
-             *  if current optimal vertex has intersection with the new half plane,
-             *  then the optimal vertex must be on the boundary of the halfplane.
-             *
-             *  otherwise, the LP probelm is infeasible.
-             */
-            vertexSet optimalCandidateVertex;
-            feasibleRegion.intersectOfHalfPlane(c, optimalCandidateVertex);
+        if(ans.getStatus() == singlePoint){
+            if(c.isVertexOnHalfPlane(ans.getPoint())){
 
-            size_t size = optimalCandidateVertex.size();
+                /**
+                 * if current optimal vertex is on the half plane that is introduced newly
+                 */
 
-            if(size == 0){
-                ans.setStatus(noSolution);
-                return ans;
+                /**
+                 * if current feasible region is only a point
+                 */
+                if(feasibleRegion.vertice.size() == 1)
+                    continue;
+
+                feasibleRegion.intersectOfHalfPlane(c);
             }
+            else{
 
-            if(size == 1){
-                double tmp = func.getValue(optimalCandidateVertex[0]);
-                ans.setSolution(optimalCandidateVertex[0], tmp, singlePoint);
+                /**
+                 *  if current feasible region has intersection with the new half plane,
+                 *  then the optimal vertex must be on the boundary of the halfplane.
+                 *
+                 *  otherwise, the LP probelm is infeasible.
+                 */
+
+                updateOptimalSolution(feasibleRegion, c, ans);
             }
-
-            if(size == 2){
-                vertex vl(optimalCandidateVertex[0]);
-                vertex vr(optimalCandidateVertex[1]);
-
-                double vlFuncValue = func.getValue(vl);
-                double vrFuncValue = func.getValue(vr);
-                if(equal(vlFuncValue, vrFuncValue)){
-                    ans.setSolution(edge(vl,vr), vlFuncValue, singleLine);
-                }else
-                    if(greaterThan(vlFuncValue, vrFuncValue)){
-                        ans.setSolution(vl, vlFuncValue, singlePoint);
-                    }
-                    else{
-                        ans.setSolution(vr, vrFuncValue, singlePoint);
-                    }
-            }
-
         }
     }
 
+    /**
+     * if the optimal solution is the boundary of original plane, then the LP has no solution.
+     * It is unbounded
+     */
     statusLP s = ans.getStatus();
     if(s == singlePoint){
         vertex vp(ans.getPoint());
@@ -169,6 +160,72 @@ solution TDLP::solve()
     }
 
     return ans;
+}
+
+void TDLP::updateOptimalSolution(region& feasibleRegion, constraint& c, solution& ans)
+{
+    vertexSet optimalCandidateVertex;
+    feasibleRegion.intersectOfHalfPlane(c, optimalCandidateVertex);
+
+    size_t size = optimalCandidateVertex.size();
+
+    /**
+     * if half plane has no intersection with feasible region and the current optimal vertex is
+     * not on the half plane, then the LP has no solution.
+     */
+    if(size == 0){
+        ans.setStatus(noSolution);
+        return;
+    }
+
+    /**
+     * if the number of intersection is one, then the current optimal solution is a point
+     */
+    if(size == 1){
+        double tmp = func.getValue(optimalCandidateVertex[0]);
+        ans.setSolution(optimalCandidateVertex[0], tmp, singlePoint);
+    }
+
+    /**
+     * if the number of intersection is two, then the current optimal solution is a line
+     */
+    if(size == 2){
+        vertex vl(optimalCandidateVertex[0]);
+        vertex vr(optimalCandidateVertex[1]);
+
+        double vlFuncValue = func.getValue(vl);
+        double vrFuncValue = func.getValue(vr);
+
+        if(equal(vlFuncValue, vrFuncValue)){
+            ans.setSolution(edge(vl,vr), vlFuncValue, singleLine);
+
+        }else{
+            double maxVal;
+            vertex maxVertex;
+
+            if(greaterThan(vlFuncValue, vrFuncValue)){
+                maxVal = vlFuncValue;
+                maxVertex = vl;
+            }
+            else{
+                maxVal = vrFuncValue;
+                maxVertex = vr;
+            }
+
+            if(equal(maxVal, ans.getFuncValue())){
+                edge e(ans.getEdge());
+                if(c.isVertexOnHalfPlane(e.start))
+                    ans.setSolution(edge(e.start, maxVertex), maxVal, singleLine);
+                else
+                    ans.setSolution(edge(maxVertex, e.end), maxVal, singleLine);
+                return;
+            }
+
+            ans.setSolution(maxVertex, maxVal, singlePoint);
+        }
+    }
+
+    return;
 }
 
 

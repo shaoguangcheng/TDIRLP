@@ -2,6 +2,7 @@
 #define TDLP_H
 
 #include <vector>
+
 #include "base.h"
 #include "util.h"
 
@@ -71,18 +72,39 @@ public :
         status(s.getStatus())
     {
         if(status == singlePoint){
-            funcValue = s.funcValue;
+            funcValue = s.getFuncValue();
             optimalPoint = s.getPoint();
         }
 
         if(status == singleLine){
-            funcValue = s.funcValue;
+            funcValue = s.getFuncValue();
             optimalEdge  = s.getEdge();
         }
 
         if(status == unbounded){
-            funcValue = s.funcValue;
+            funcValue = s.getFuncValue();
         }
+    }
+
+    solution& operator = (const solution& s)
+    {
+        status = s.getStatus();
+
+        if(status == singlePoint){
+            funcValue = s.getFuncValue();
+            optimalPoint = s.getPoint();
+        }
+
+        if(status == singleLine){
+            funcValue = s.getFuncValue();
+            optimalEdge  = s.getEdge();
+        }
+
+        if(status == unbounded){
+            funcValue = s.getFuncValue();
+        }
+
+        return *this;
     }
 
     void setSolution(const point& p, double value, statusLP s)
@@ -225,6 +247,9 @@ public:
 
     constraintSet getConstraint() const;
     objFunc getObjFunc() const;
+
+private :
+    void updateOptimalSolution(region& feasibleRegion, constraint &c, solution& ans);
 
 private :
     /**
