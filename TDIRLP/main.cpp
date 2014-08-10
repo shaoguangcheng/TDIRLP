@@ -2,6 +2,7 @@
 
 #include <QApplication>
 
+#include "addconstraints.h"
 #include "mainwindow.h"
 #include "test.h"
 

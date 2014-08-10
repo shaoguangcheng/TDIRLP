@@ -16,6 +16,10 @@ TDLP::TDLP(const TDLP &tdlp) :
 {
 }
 
+TDLP::~TDLP()
+{
+}
+
 TDLP& TDLP::operator = (const TDLP& tdlp)
 {
     constraints = tdlp.getConstraint();

@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     test.cpp \
     TDLP.cpp \
     qcustomplot.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    addconstraints.cpp
 
 HEADERS += \
     base.h \
@@ -18,8 +19,10 @@ HEADERS += \
     test.h \
     TDLP.h \
     qcustomplot.h \
-    mainwindow.h
+    mainwindow.h \
+    addconstraints.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    addconstraints.ui
 

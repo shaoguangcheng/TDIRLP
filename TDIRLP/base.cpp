@@ -87,6 +87,13 @@ vertex halfPlane::intersectPoint(const halfPlane& hp) const
     return intersection;
 }
 
+void halfPlane::clear()
+{
+    xCoef = 0.0;
+    yCoef = 0.0;
+    bias  = 0.0;
+}
+
 void halfPlane::getOrientation()
 {
     double x0 = -1.0*bias/xCoef, y0 = -1.0*bias/yCoef;

@@ -232,6 +232,7 @@ class TDLP
 public:
     TDLP();
     TDLP(const TDLP& tdlp);
+    ~TDLP();
 
     TDLP& operator = (const TDLP& tdlp);
 

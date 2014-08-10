@@ -2,7 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
+#include "TDLP.h"
 #include "qcustomplot.h"
+#include "addconstraints.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,8 +19,22 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     
+private slots:
+    void on_addConstraintButton_clicked();
+    void on_solveButton_clicked();
+    void on_clearButton_clicked();
+    void on_exportResultButton_clicked();
+    void on_helpLinkButton_clicked();
+
+private :
+    void setupCustomPlot(QCustomPlot *plot);
+
 private:
     Ui::MainWindow *ui;
+
+    TDLP *tdlp;
+    polygon *feasibleRegion;
+    addConstraints *addC;
 };
 
 #endif // MAINWINDOW_H
