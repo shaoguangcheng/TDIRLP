@@ -19,7 +19,7 @@ public:
     ~addConstraints();
 
     constraint getConstraint() const;
-    QString getSign() const;
+    QChar getSign() const;
     
 private slots:
     void on_ensureButton_clicked();
@@ -28,7 +28,7 @@ private slots:
 private:
     Ui::addConstraints *ui;
     constraint c;
-    QString sign;
+    QChar sign;
 };
 
 #endif // ADDCONSTRAINTS_H

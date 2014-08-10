@@ -57,9 +57,9 @@
      <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>40</x>
         <y>10</y>
-        <width>391</width>
+        <width>371</width>
         <height>27</height>
        </rect>
       </property>
@@ -137,30 +137,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="secondComboBox">
-         <item>
-          <property name="text">
-           <string>+</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>-</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="biasLineEdit">
-         <property name="text">
-          <string>0</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="label_6">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
@@ -175,12 +151,25 @@
           </font>
          </property>
          <property name="text">
-          <string>&lt;= 0</string>
+          <string>&lt;= </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="biasLineEdit">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
       </layout>
      </widget>
+     <zorder></zorder>
+     <zorder>biasLineEdit</zorder>
+     <zorder>biasLineEdit</zorder>
     </widget>
    </item>
   </layout>

@@ -8,7 +8,6 @@ addConstraints::addConstraints(QWidget *parent) :
     ui->setupUi(this);
 
     c.clear();
-    sign.clear();
 }
 
 addConstraints::~addConstraints()
@@ -21,7 +20,7 @@ void addConstraints::on_ensureButton_clicked()
     bool ok;
 
     c.clear();
-    sign.clear();
+    sign = '\0';
 
     c.xCoef = ui->xCoedLineEdit->text().toDouble(&ok);
     if(ok == false){
@@ -44,17 +43,11 @@ void addConstraints::on_ensureButton_clicked()
         return;
     }
 
-    QChar ch = ui->firstComboBox->currentIndex();
+    int ch = ui->firstComboBox->currentIndex();
     if(ch == 0)
-        sign.push_back('+');
+        sign = '+';
     if(ch == 1)
-        sign.push_back('-');
-
-    ch = ui->secondComboBox->currentIndex();
-    if(ch == 0)
-        sign.push_back('+');
-    if(ch == 1)
-        sign.push_back('-');
+        sign = '-';
 
     if(equal(c.xCoef, 0)&&equal(c.yCoef, 0)){
         QMessageBox::critical(this, "Error", tr("xCoef and yCoef can not be zero meanwhile"));
@@ -74,7 +67,7 @@ constraint addConstraints::getConstraint() const
     return c;
 }
 
-QString addConstraints::getSign() const
+QChar addConstraints::getSign() const
 {
     return sign;
 }

@@ -28,6 +28,7 @@ private slots:
 
 private :
     void setupCustomPlot(QCustomPlot *plot);
+    void plotFigure();
 
 private:
     Ui::MainWindow *ui;
@@ -35,6 +36,8 @@ private:
     TDLP *tdlp;
     polygon *feasibleRegion;
     addConstraints *addC;
+
+    QString constraintStr;
 };
 
 #endif // MAINWINDOW_H
