@@ -126,6 +126,8 @@ public :
 
     polygon& operator = (const polygon& p);
 
+    void clear();
+
     /**
      * @brief intersectOfHalfPlane using a half plane to cut a polygon and obtain a new polygon
      * @param hp

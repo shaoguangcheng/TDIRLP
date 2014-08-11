@@ -339,6 +339,12 @@ polygon polygon::intersectOfHalfPlane(const halfPlane& hp)
     return intersectOfHalfPlane(hp, vs);
 }
 
+void polygon::clear()
+{
+    edges.clear();
+    vertice.clear();
+}
+
 polygon polygon::intersectOfHalfPlane(const halfPlane& hp, vertexSet& intersectVertex)
 {
     list<edge>::iterator edgeIt;

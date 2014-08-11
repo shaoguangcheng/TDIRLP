@@ -28,7 +28,12 @@ private slots:
 
 private :
     void setupCustomPlot(QCustomPlot *plot);
-    void plotFigure();
+    void plotFigure(const constraint &c);
+    void setRange(QVector<double> vx, QVector<double> vy, const constraint &c);
+    void setText(const vertex& v, const QString& text );
+
+    double getXValue(const constraint&c, double y);
+    double getYValue(const constraint&c, double x);
 
 private:
     Ui::MainWindow *ui;

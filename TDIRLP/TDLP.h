@@ -41,6 +41,11 @@ public :
         yCoef = obj.yCoef;
     }
 
+    inline void clear(){
+        xCoef = 0;
+        yCoef = 0;
+    }
+
     inline double getValue(const point& v){
         return xCoef*v.x+yCoef*v.y;
     }
