@@ -2,9 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
+#include <QTextEdit>
 
 #include "TDLP.h"
 #include "qcustomplot.h"
+#include "qcpdocumentobject.h"
 #include "addconstraints.h"
 
 namespace Ui {
@@ -29,11 +32,15 @@ private slots:
 private :
     void setupCustomPlot(QCustomPlot *plot);
     void plotFigure(const constraint &c);
-    void setRange(QVector<double> vx, QVector<double> vy, const constraint &c);
+    void setRange(QVector<double> vx, QVector<double> vy);
     void setText(const vertex& v, const QString& text );
+    void initPlane();
 
     double getXValue(const constraint&c, double y);
     double getYValue(const constraint&c, double x);
+
+    bool hasUpperBooundary(double val, double margin = 0.0) const;
+    bool hasLowerBooundary(double val, double margin = 0.0) const;
 
 private:
     Ui::MainWindow *ui;

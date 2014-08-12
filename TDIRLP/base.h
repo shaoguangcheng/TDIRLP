@@ -64,6 +64,8 @@ public :
     bool isEdgeOnHalfPlane(const edge& e) const;
     vertex intersectPoint(const halfPlane& hp) const;
 
+    string toString() const;
+
     void clear();
 
 private :

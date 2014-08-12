@@ -14,23 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     tdlp = new TDLP();
 
-    vertex v1(LOWBOUND, UPBOUND);
-    vertex v2(UPBOUND, UPBOUND);
-    vertex v3(UPBOUND, LOWBOUND);
-    vertex v4(LOWBOUND, LOWBOUND);
-
-    edge e1(v1, v2);
-    edge e2(v2, v3);
-    edge e3(v3, v4);
-    edge e4(v4, v1);
-
-    list<edge> edges;
-    edges.push_back(e1);
-    edges.push_back(e2);
-    edges.push_back(e3);
-    edges.push_back(e4);
-
-    feasibleRegion = new polygon(edges);
+    initPlane();
 }
 
 MainWindow::~MainWindow()
@@ -164,49 +148,59 @@ void MainWindow::on_solveButton_clicked()
     ui->customplot->clearGraphs();
     ui->customplot->addGraph();
     ui->customplot->graph(0)->setPen(QPen(Qt::red));
-    ui->customplot->graph(0)->setLineStyle(QCPGraph::lsNone);
 
     QString fmt;
     if(s.getStatus() == singlePoint){
-        fmt = "optimal solution is a point\n";
+        fmt = "optimal solution is a point.\n";
         fmt = fmt + QString("coordinate : (")
                 + QString::number(s.getPoint().x, 'g', '2') + QString(", ")
-                + QString::number(s.getPoint().y, 'g', '2') + QString(")\n");
-
+                + QString::number(s.getPoint().y, 'g', '2') + QString(").\n");
         fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
 
+        ui->customplot->graph(0)->setLineStyle(QCPGraph::lsNone);
         ui->customplot->graph(0)->setScatterStyle(QCPScatterStyle::ssDisc);
         ui->customplot->graph(0)->addData(s.getPoint().x, s.getPoint().y);
 
         QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
         ui->customplot->addItem(vertexLabel);
-        vertexLabel->setPositionAlignment(Qt::AlignBottom | Qt::AlignLeft);
+        vertexLabel->setPositionAlignment(Qt::AlignTop | Qt::AlignLeft);
         vertexLabel->position->setType(QCPItemPosition::ptPlotCoords);
 
         vertexLabel->position->setCoords(s.getPoint().x, s.getPoint().y);
+        vertexLabel->setColor(QColor(255,0,0));
         vertexLabel->setText(QString("optimal point"));
     }
 
     if(s.getStatus() == singleLine){
-        fmt = "optimal solution is a line\n";
-        fmt = fmt + QString("from (") +
-                QString::number(s.getEdge().start.x, 'g', '2') + QString(", ")
-                + QString::number(s.getEdge().start.y, 'g', '2') + QString(") to (")
-                + QString::number(s.getEdge().end.x, 'g', '2') + QString(", ")
-                + QString::number(s.getEdge().end.y, 'g', '2') + QString(")\n");
+        vertex start = s.getEdge().start, end = s.getEdge().end;
 
+        fmt = "optimal solution is a line.\n";
+        fmt = fmt + QString("from (") +
+                QString::number(start.x, 'g', '2') + QString(", ")
+                + QString::number(start.y, 'g', '2') + QString(") \nto (")
+                + QString::number(end.x, 'g', '2') + QString(", ")
+                + QString::number(end.y, 'g', '2') + QString(").\n");
         fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
 
-        ui->customplot->graph(0)->setScatterStyle(QCPScatterStyle::ssDisc);
-        ui->customplot->graph(0)->addData(s.getEdge().start.x, s.getEdge().start.y);
+        const int N = 2;
+        QVector<double> vx(N), vy(N);
+
+        vx.push_back(start.x);
+        vx.push_back(end.x);
+        vy.push_back(start.y);
+        vy.push_back(end.y);
+
+        ui->customplot->graph(0)->setLineStyle(QCPGraph::lsNone);
+        ui->customplot->graph(0)->setData(vx, vy);
 
         QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
         ui->customplot->addItem(vertexLabel);
         vertexLabel->setPositionAlignment(Qt::AlignBottom | Qt::AlignLeft);
         vertexLabel->position->setType(QCPItemPosition::ptPlotCoords);
+        vertexLabel->setColor(QColor(255,0,0));
 
-        vertexLabel->position->setCoords(s.getEdge().start.x, s.getEdge().start.y);
-        vertexLabel->setText(QString("optimal point"));
+        vertexLabel->position->setCoords((start.x+end.x)/2, (start.y+end.y)/2);
+        vertexLabel->setText(QString("optimal line"));
     }
 
     if(s.getStatus() == unbounded){
@@ -236,12 +230,39 @@ void MainWindow::on_clearButton_clicked()
     ui->customplot->clearGraphs();
     ui->customplot->clearPlottables();
     ui->customplot->clearItems();
+    ui->customplot->rescaleAxes();
     ui->customplot->replot();
 }
 
 void MainWindow::on_exportResultButton_clicked()
 {
+    QString fileName = QFileDialog::getSaveFileName(this, "Save document...", qApp->applicationDirPath(), "*.pdf");
+    if (!fileName.isEmpty())
+    {
+      QPrinter printer;
+      printer.setFullPage(true);
+      printer.setPaperSize(QPrinter::A4);
+      printer.setOrientation(QPrinter::Portrait);
+      printer.setOutputFormat(QPrinter::PdfFormat);
+      printer.setOutputFileName(fileName);
 
+      QTextEdit *textEdit = new QTextEdit;
+      textEdit->append("objective function : ");
+      textEdit->append(tdlp->getObjFunc().toString().c_str());
+      textEdit->append("\n ");
+      textEdit->append("constraints : ");
+      textEdit->append(ui->constrainsLabel->text());
+      textEdit->append("\n ");
+
+      int width = ui->customplot->width()/2;
+      int height = ui->customplot->height()/2;
+      ui->customplot->savePng("1.png", width, height);
+
+      textEdit->append("<img src = 1.png>");
+      textEdit->append("\nsolution : ");
+      textEdit->append(ui->solutionLabel->text());
+      textEdit->document()->print(&printer);
+     }
 }
 
 void MainWindow::on_helpLinkButton_clicked()
@@ -276,6 +297,9 @@ void MainWindow::plotFigure(const constraint& c)
     }
 #endif
 
+    if(0 == feasibleRegion->vertice.size())
+        initPlane();
+
     feasibleRegion->intersectOfHalfPlane(c);
 
     list<vertex> vertice = feasibleRegion->vertice;
@@ -308,9 +332,7 @@ void MainWindow::plotFigure(const constraint& c)
     curve->setData(vx, vy);
     ui->customplot->addPlottable(curve);
 
-    //setRange(vx, vy, c);
-
-    ui->customplot->rescaleAxes();
+    setRange(vx, vy);
 
     ui->customplot->replot();
 }
@@ -324,6 +346,27 @@ void MainWindow::setText(const vertex& v, const QString& text )
 
     vertexLabel->position->setCoords(v.x, v.y);
     vertexLabel->setText(text);
+}
+
+void MainWindow::initPlane()
+{
+    vertex v1(LOWBOUND, UPBOUND);
+    vertex v2(UPBOUND, UPBOUND);
+    vertex v3(UPBOUND, LOWBOUND);
+    vertex v4(LOWBOUND, LOWBOUND);
+
+    edge e1(v1, v2);
+    edge e2(v2, v3);
+    edge e3(v3, v4);
+    edge e4(v4, v1);
+
+    list<edge> edges;
+    edges.push_back(e1);
+    edges.push_back(e2);
+    edges.push_back(e3);
+    edges.push_back(e4);
+
+    feasibleRegion = new polygon(edges);
 }
 
 
@@ -348,7 +391,29 @@ double MainWindow::getXValue(const constraint&c, double y)
     }
 }
 
-void MainWindow::setRange(QVector<double> vx, QVector<double> vy, const constraint &c)
+/**
+ * @brief MainWindow::hasUpperBooundary  val has upper boundary ?
+ * @param val
+ * @param margin
+ * @return
+ */
+bool MainWindow::hasUpperBooundary(double val, double margin) const
+{
+    return lessThan(val+margin, 1000);
+}
+
+/**
+ * @brief MainWindow::hasLowerBooundary  val has lower boundary ?
+ * @param val
+ * @param margin
+ * @return
+ */
+bool MainWindow::hasLowerBooundary(double val, double margin) const
+{
+    return greaterThan(val-margin, -1000);
+}
+
+void MainWindow::setRange(QVector<double> vx, QVector<double> vy)
 {
     sort(vx.begin(), vx.end());
     sort(vy.begin(), vy.end());
@@ -357,50 +422,50 @@ void MainWindow::setRange(QVector<double> vx, QVector<double> vy, const constrai
     double xMargin = (xMax - xMin)/10.0;
     double yMargin = (yMax - yMin)/10.0;
 
-    double xUpper = UPBOUND, xLower = LOWBOUND, yUpper = UPBOUND, yLower = LOWBOUND;
-    if(!equal(xMax, UPBOUND)){
-        xUpper = xMax + fabs(xMax)/10+1;
+    double xUpper = 100, xLower = -100, yUpper = 100, yLower = -100;
+
+    if(hasUpperBooundary(xMax, xMargin)&&hasLowerBooundary(xMin, xMargin)){
+        xUpper = xMax + xMargin;
+        xLower = xMin - xMargin;
     }
-    else
+
+    if(hasUpperBooundary(xMax, xMargin)&&(!hasLowerBooundary(xMin, xMargin))){
+        xUpper = xMax + fabs(xMax)/8+1.0;
+        xLower = xMax - fabs(xMax)/8-1.0;
+    }
+
+    if((!hasUpperBooundary(xMax, xMargin))&&hasLowerBooundary(xMin, xMargin)){
+        xUpper = xMin + fabs(xMin)/8+1.0;
+        xLower = xMin - fabs(xMin)/8-1.0;
+    }
+
+    if((!hasUpperBooundary(xMax, xMargin))&&(!hasLowerBooundary(xMin, xMargin))){
         xUpper = 100;
-
-    if(!equal(xMin, LOWBOUND)){
-        xLower = xLower - fabs(xLower)/10-1;
-    }
-    else
-        xLower = -100;
-
-    if(!equal(yMax, UPBOUND)){
-        yUpper = yMax + fabs(yMax)/10+1;
-    }
-    else
-        yUpper = 100;
-
-    if(!equal(yMin, LOWBOUND)){
-        yLower = yLower - fabs(yLower)/10-1;
-    }
-
-
-#if 0
-   if(greaterThan(xUpper, 100)){
-        xUpper = 100;
-    }
-
-    if(lessThan(xLower, -100)){
         xLower = -100;
     }
 
-    if(greaterThan(yUpper, 100)){
-        yUpper = 100;
+    if(hasUpperBooundary(yMax, yMargin)&&hasLowerBooundary(yMin, yMargin)){
+        yUpper = yMax + yMargin;
+        yLower = yMin - yMargin;
     }
 
-    if(lessThan(yLower, -100)){
-        yLower = -100;
+    if(hasUpperBooundary(yMax, yMargin)&&(!hasLowerBooundary(yMin, yMargin))){
+        yUpper = yMax + fabs(yMax)/8+1.0;
+        yLower = yMax - fabs(yMax)/8-1.0;
     }
-#endif
+
+    if((!hasUpperBooundary(yMax, xMargin))&&hasLowerBooundary(yMin, yMargin)){
+        yUpper = yMin + fabs(yMin)/8+1.0;
+        yLower = yMin - fabs(yMin)/8-1.0;
+    }
+
+    if((!hasUpperBooundary(yMax, yMargin))&&(!hasLowerBooundary(yMin, yMargin))){
+        yUpper = xUpper;
+        yLower = xLower;
+    }
 
     ui->customplot->xAxis->setRange(xLower, xUpper);
     ui->customplot->yAxis->setRange(yLower, yUpper);
 
-    ui->customplot->rescaleAxes();
+//    ui->customplot->rescaleAxes();
 }

@@ -88,6 +88,7 @@ solution TDLP::solve()
      * @brief ans the optimal solution of the LP
      */
     solution ans(v[index], value[index]);
+    ans.setStatus(unbounded);
 
     /**
      * define the boundary plane
@@ -114,7 +115,7 @@ solution TDLP::solve()
     constConstraintIterator it;
     for(it = constraints.begin(); it != constraints.end(); it++){
         constraint c = *it;
-
+        DEBUGMSG(ans.getStatus());
         if(ans.getStatus() == singleLine){
             edge e(ans.getEdge());
             if(c.isEdgeOnHalfPlane(e)){

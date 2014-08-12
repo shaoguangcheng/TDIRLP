@@ -39,6 +39,28 @@ halfPlane& halfPlane::operator = (const halfPlane& hp)
     return *this;
 }
 
+string halfPlane::toString() const
+{
+    char* fmt = new char[100];
+
+    if(!equal(xCoef, 0))
+        sprintf(fmt, "%lfx", xCoef);
+
+    if(greaterThan(yCoef, 0))
+        sprintf(fmt, "%s+%lfy", fmt, yCoef);
+
+    if(lessThan(yCoef, 0))
+        sprintf(fmt, "%s-%lfy", fmt, -1*yCoef);
+
+    sprintf(fmt, "%s<=%lf", fmt, -1*bias);
+
+    string s(fmt);
+
+    delete [] fmt;
+
+    return s;
+}
+
 bool halfPlane::isIntersectWithEdge(const edge& e) const
 {
     return (

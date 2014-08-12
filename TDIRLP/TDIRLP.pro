@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     TDLP.cpp \
     qcustomplot.cpp \
     mainwindow.cpp \
-    addconstraints.cpp
+    addconstraints.cpp\
+    qcpdocumentobject.cpp
 
 HEADERS += \
     base.h \
@@ -20,7 +21,8 @@ HEADERS += \
     TDLP.h \
     qcustomplot.h \
     mainwindow.h \
-    addconstraints.h
+    addconstraints.h\
+    qcpdocumentobject.h
 
 FORMS += \
     mainwindow.ui \

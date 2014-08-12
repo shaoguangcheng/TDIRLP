@@ -41,6 +41,28 @@ public :
         yCoef = obj.yCoef;
     }
 
+    string toString() const
+    {
+        char* fmt = new char [200];
+
+        sprintf(fmt, "max f= max ");
+
+        if(!equal(xCoef, 0))
+            sprintf(fmt, "%s%lfx", fmt, xCoef);
+
+        if(greaterThan(yCoef, 0))
+            sprintf(fmt, "%s+%lfy", fmt, yCoef);
+
+        if(lessThan(yCoef, 0))
+            sprintf(fmt, "%s-%lfy", fmt, -1*yCoef);
+
+        string s(fmt);
+
+        delete [] fmt;
+
+        return s;
+    }
+
     inline void clear(){
         xCoef = 0;
         yCoef = 0;
