@@ -7,7 +7,6 @@
 
 #include "TDLP.h"
 #include "qcustomplot.h"
-#include "qcpdocumentobject.h"
 #include "addconstraints.h"
 
 namespace Ui {

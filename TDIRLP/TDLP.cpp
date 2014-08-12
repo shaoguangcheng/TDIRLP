@@ -88,7 +88,6 @@ solution TDLP::solve()
      * @brief ans the optimal solution of the LP
      */
     solution ans(v[index], value[index]);
-    ans.setStatus(unbounded);
 
     /**
      * define the boundary plane
@@ -115,7 +114,7 @@ solution TDLP::solve()
     constConstraintIterator it;
     for(it = constraints.begin(); it != constraints.end(); it++){
         constraint c = *it;
-        DEBUGMSG(ans.getStatus());
+
         if(ans.getStatus() == singleLine){
             edge e(ans.getEdge());
             if(c.isEdgeOnHalfPlane(e)){
@@ -151,7 +150,6 @@ solution TDLP::solve()
                  *
                  *  otherwise, the LP probelm is infeasible.
                  */
-
                 updateOptimalSolution(feasibleRegion, c, ans);
             }
         }
@@ -236,12 +234,14 @@ void TDLP::updateOptimalSolution(region& feasibleRegion, constraint& c, solution
                  * if current optimal value is equal to last optimal value, then the status of last optimal is single line
                  * and current optimal vertex is on that line
                  */
-                edge e(ans.getEdge());
-                if(c.isVertexOnHalfPlane(e.start))
-                    ans.setSolution(edge(e.start, maxVertex), maxVal, singleLine);
-                else
-                    ans.setSolution(edge(maxVertex, e.end), maxVal, singleLine);
-                return;
+                if(ans.getStatus() == singleLine){
+                    edge e(ans.getEdge());
+                    if(c.isVertexOnHalfPlane(e.start))
+                        ans.setSolution(edge(e.start, maxVertex), maxVal, singleLine);
+                    else
+                        ans.setSolution(edge(maxVertex, e.end), maxVal, singleLine);
+                    return;
+                }
             }
 
             ans.setSolution(maxVertex, maxVal, singlePoint);

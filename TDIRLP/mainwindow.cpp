@@ -41,7 +41,7 @@ void MainWindow::setupCustomPlot(QCustomPlot *plot)
     plot->legend->setVisible(true);
     plot->legend->setFont(legendFont);
     plot->legend->setSelectedFont(legendFont);
-    plot->legend->setSelectedParts(QCPLegend::spItems);
+//    plot->legend->setSelectedParts(QCPLegend::spItems);
 
     // make left and bottom axes transfer their ranges to right and top axes:
     connect(plot->xAxis, SIGNAL(rangeChanged(QCPRange)), plot->xAxis2, SLOT(setRange(QCPRange)));
@@ -105,6 +105,7 @@ void MainWindow::on_addConstraintButton_clicked()
     tdlp->addConstraint(cTmp);
 
     ui->customplot->clearPlottables();
+    ui->customplot->clearItems();
 
     plotFigure(cTmp);
 
@@ -137,17 +138,12 @@ void MainWindow::on_solveButton_clicked()
         return;
     }
 
-    QChar ch = ui->objFunSignComboBox->currentIndex();
-    if(ch == '-')
+    int index = ui->objFunSignComboBox->currentIndex();
+    if(index == 1)
         fun.yCoef *= -1.0;
-
     tdlp->setObjFunc(fun);
 
     solution s = tdlp->solve();
-
-    ui->customplot->clearGraphs();
-    ui->customplot->addGraph();
-    ui->customplot->graph(0)->setPen(QPen(Qt::red));
 
     QString fmt;
     if(s.getStatus() == singlePoint){
@@ -157,6 +153,9 @@ void MainWindow::on_solveButton_clicked()
                 + QString::number(s.getPoint().y, 'g', '2') + QString(").\n");
         fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
 
+        ui->customplot->clearGraphs();
+        ui->customplot->addGraph();
+        ui->customplot->graph(0)->setPen(QPen(Qt::red));
         ui->customplot->graph(0)->setLineStyle(QCPGraph::lsNone);
         ui->customplot->graph(0)->setScatterStyle(QCPScatterStyle::ssDisc);
         ui->customplot->graph(0)->addData(s.getPoint().x, s.getPoint().y);
@@ -182,6 +181,7 @@ void MainWindow::on_solveButton_clicked()
                 + QString::number(end.y, 'g', '2') + QString(").\n");
         fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
 
+#if 0
         const int N = 2;
         QVector<double> vx(N), vy(N);
 
@@ -192,6 +192,7 @@ void MainWindow::on_solveButton_clicked()
 
         ui->customplot->graph(0)->setLineStyle(QCPGraph::lsNone);
         ui->customplot->graph(0)->setData(vx, vy);
+#endif
 
         QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
         ui->customplot->addItem(vertexLabel);
@@ -265,12 +266,24 @@ void MainWindow::on_exportResultButton_clicked()
      }
 }
 
+/**
+ * @brief MainWindow::on_helpLinkButton_clicked help slot
+ */
 void MainWindow::on_helpLinkButton_clicked()
 {
-    QString helpText = "";
+    QString helpText = "1. click add constraints button to add new constraint for the linear programming.\n\n"
+            "2. after adding all the constraints, please input the objective funtion in the left top panel.\n\n"
+            "3. click solve button to get the answer of the linear programming.\n\n"
+            "4. the result will be displayed in the result panel.\n\n"
+            "5. click export result button to save the problem and its answer to a specified file with pdf format.\n\n"
+            "6. click the clear button to clean all the items in the UI and then you can input a new problem";
     QMessageBox::about(this, "help", helpText);
 }
 
+/**
+ * @brief MainWindow::plotFigure plot c on customplot
+ * @param c
+ */
 void MainWindow::plotFigure(const constraint& c)
 {
 #if 0
@@ -336,7 +349,11 @@ void MainWindow::plotFigure(const constraint& c)
 
     ui->customplot->replot();
 }
-
+/**
+ * @brief MainWindow::setText put text at position v
+ * @param v
+ * @param text
+ */
 void MainWindow::setText(const vertex& v, const QString& text )
 {
     QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
@@ -348,6 +365,9 @@ void MainWindow::setText(const vertex& v, const QString& text )
     vertexLabel->setText(text);
 }
 
+/**
+ * @brief MainWindow::initPlane initialize the original plane
+ */
 void MainWindow::initPlane()
 {
     vertex v1(LOWBOUND, UPBOUND);
@@ -369,7 +389,12 @@ void MainWindow::initPlane()
     feasibleRegion = new polygon(edges);
 }
 
-
+/**
+ * @brief MainWindow::getYValue given x, calculate y according to function c
+ * @param c
+ * @param x
+ * @return
+ */
 double MainWindow::getYValue(const constraint&c, double x)
 {
     if(equal(c.yCoef, 0)){
@@ -380,7 +405,12 @@ double MainWindow::getYValue(const constraint&c, double x)
     }
 }
 
-
+/**
+ * @brief MainWindow::getXValue given y, calculate x according to function c
+ * @param c
+ * @param y
+ * @return
+ */
 double MainWindow::getXValue(const constraint&c, double y)
 {
     if(equal(c.xCoef, 0)){
@@ -413,6 +443,11 @@ bool MainWindow::hasLowerBooundary(double val, double margin) const
     return greaterThan(val-margin, -1000);
 }
 
+/**
+ * @brief MainWindow::setRange decide the range the x axis and y axis
+ * @param vx
+ * @param vy
+ */
 void MainWindow::setRange(QVector<double> vx, QVector<double> vy)
 {
     sort(vx.begin(), vx.end());
