@@ -194,6 +194,7 @@ void MainWindow::on_solveButton_clicked()
         ui->customplot->graph(0)->setData(vx, vy);
 #endif
 
+        // shoe the optimal line item
         QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
         ui->customplot->addItem(vertexLabel);
         vertexLabel->setPositionAlignment(Qt::AlignBottom | Qt::AlignLeft);
@@ -223,11 +224,13 @@ void MainWindow::on_clearButton_clicked()
     tdlp->clear();
     constraintStr.clear();
     feasibleRegion->clear();
+
     ui->constrainsLabel->clear();
     ui->objFunSignComboBox->setCurrentIndex(0);
     ui->xCoefLineEdit->setText(QString("0"));
     ui->yCoefLineEdit->setText(QString("0"));
     ui->solutionLabel->clear();
+
     ui->customplot->clearGraphs();
     ui->customplot->clearPlottables();
     ui->customplot->clearItems();
@@ -240,6 +243,9 @@ void MainWindow::on_exportResultButton_clicked()
     QString fileName = QFileDialog::getSaveFileName(this, "Save document...", qApp->applicationDirPath(), "*.pdf");
     if (!fileName.isEmpty())
     {
+      /**
+       * set the printer
+       */
       QPrinter printer;
       printer.setFullPage(true);
       printer.setPaperSize(QPrinter::A4);
@@ -266,9 +272,7 @@ void MainWindow::on_exportResultButton_clicked()
      }
 }
 
-/**
- * @brief MainWindow::on_helpLinkButton_clicked help slot
- */
+
 void MainWindow::on_helpLinkButton_clicked()
 {
     QString helpText = "1. click add constraints button to add new constraint for the linear programming.\n\n"
@@ -280,10 +284,7 @@ void MainWindow::on_helpLinkButton_clicked()
     QMessageBox::about(this, "help", helpText);
 }
 
-/**
- * @brief MainWindow::plotFigure plot c on customplot
- * @param c
- */
+
 void MainWindow::plotFigure(const constraint& c)
 {
 #if 0
@@ -349,11 +350,7 @@ void MainWindow::plotFigure(const constraint& c)
 
     ui->customplot->replot();
 }
-/**
- * @brief MainWindow::setText put text at position v
- * @param v
- * @param text
- */
+
 void MainWindow::setText(const vertex& v, const QString& text )
 {
     QCPItemText *vertexLabel = new QCPItemText(ui->customplot);
@@ -365,9 +362,7 @@ void MainWindow::setText(const vertex& v, const QString& text )
     vertexLabel->setText(text);
 }
 
-/**
- * @brief MainWindow::initPlane initialize the original plane
- */
+
 void MainWindow::initPlane()
 {
     vertex v1(LOWBOUND, UPBOUND);
@@ -389,12 +384,7 @@ void MainWindow::initPlane()
     feasibleRegion = new polygon(edges);
 }
 
-/**
- * @brief MainWindow::getYValue given x, calculate y according to function c
- * @param c
- * @param x
- * @return
- */
+
 double MainWindow::getYValue(const constraint&c, double x)
 {
     if(equal(c.yCoef, 0)){
@@ -405,12 +395,6 @@ double MainWindow::getYValue(const constraint&c, double x)
     }
 }
 
-/**
- * @brief MainWindow::getXValue given y, calculate x according to function c
- * @param c
- * @param y
- * @return
- */
 double MainWindow::getXValue(const constraint&c, double y)
 {
     if(equal(c.xCoef, 0)){
@@ -421,33 +405,17 @@ double MainWindow::getXValue(const constraint&c, double y)
     }
 }
 
-/**
- * @brief MainWindow::hasUpperBooundary  val has upper boundary ?
- * @param val
- * @param margin
- * @return
- */
 bool MainWindow::hasUpperBooundary(double val, double margin) const
 {
     return lessThan(val+margin, 1000);
 }
 
-/**
- * @brief MainWindow::hasLowerBooundary  val has lower boundary ?
- * @param val
- * @param margin
- * @return
- */
 bool MainWindow::hasLowerBooundary(double val, double margin) const
 {
     return greaterThan(val-margin, -1000);
 }
 
-/**
- * @brief MainWindow::setRange decide the range the x axis and y axis
- * @param vx
- * @param vy
- */
+
 void MainWindow::setRange(QVector<double> vx, QVector<double> vy)
 {
     sort(vx.begin(), vx.end());
