@@ -14,12 +14,12 @@ Requirements
 
 Usage
 ============
-1. click add constraints button to add new constraint for the linear programming.
-2. after adding all the constraints, please input the objective funtion in the left top panel.
-3. click solve button to get the answer of the linear programming.
-4. the result will be displayed in the result panel.
-5. click export result button to save the problem and its answer to a specified file with pdf format.
-6. click the clear button to clean all the items in the UI and then you can input a new problem.
+1. Click add constraints button to add new constraint for the linear programming.
+2. After adding all the constraints, please input the objective funtion in the left top panel.
+3. Click solve button to get the answer of the linear programming.
+4. The result will be displayed in the result panel.
+5. Click export result button to save the problem and its answer to a specified file with pdf format.
+6. Click the clear button to clean all the items in the UI and then you can input a new problem.
 
 Platform 
 ===========
