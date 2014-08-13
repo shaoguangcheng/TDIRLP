@@ -3,8 +3,25 @@
 
 #include <math.h>
 
+#define PRECISION 2
 
 #define EPS 1e-6
+
+/**
+ * @brief exp calcualte x*x*x*....
+ * @param x
+ * @param n
+ * @return
+ */
+int exp(int x, int n);
+
+/**
+ * @brief setPrecision reserve n digits for x
+ * @param x
+ * @param n
+ * @return
+ */
+double setPrecision(double x, int n);
 
 /**
  * @brief greaterThan if x > y

@@ -8,6 +8,8 @@ addConstraints::addConstraints(QWidget *parent) :
     ui->setupUi(this);
 
     c.clear();
+
+    code = 0;
 }
 
 addConstraints::~addConstraints()
@@ -21,6 +23,7 @@ void addConstraints::on_ensureButton_clicked()
 
     c.clear();
     sign = '\0';
+    code = 1;
 
     c.xCoef = ui->xCoedLineEdit->text().toDouble(&ok);
     if(ok == false){
@@ -59,6 +62,7 @@ void addConstraints::on_ensureButton_clicked()
 
 void addConstraints::on_cancelButton_clicked()
 {
+    code = 0;
     this->close();
 }
 
@@ -70,4 +74,9 @@ constraint addConstraints::getConstraint() const
 QChar addConstraints::getSign() const
 {
     return sign;
+}
+
+int addConstraints::getCode() const
+{
+    return code;
 }

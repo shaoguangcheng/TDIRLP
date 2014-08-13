@@ -89,11 +89,15 @@ public :
 
     solution(const point& v, double funcValue) :
         optimalPoint(v),funcValue(funcValue), status(singlePoint)
-    {}
+    {
+        format();
+    }
 
     solution(const edge& e, double funcValue) :
         optimalEdge(e), funcValue(funcValue), status(singleLine)
-    {}
+    {
+        format();
+    }
 
     solution(const solution& s) :
         status(s.getStatus())
@@ -111,6 +115,8 @@ public :
         if(status == unbounded){
             funcValue = s.getFuncValue();
         }
+
+        format();
     }
 
     solution& operator = (const solution& s)
@@ -131,6 +137,8 @@ public :
             funcValue = s.getFuncValue();
         }
 
+        format();
+
         return *this;
     }
 
@@ -140,6 +148,8 @@ public :
             optimalPoint = p;
             funcValue = value;
             status = s;
+
+            format();
         }
         else{
             DEBUGMSG("solution status can not match");
@@ -153,10 +163,33 @@ public :
             optimalEdge = e;
             funcValue   = value;
             status = s;
+
+            format();
         }
         else{
             DEBUGMSG("solution status can not match");
             exit(EXIT_FAILURE);
+        }
+    }
+
+    void format()
+    {
+        if(status == singlePoint){
+            funcValue = setPrecision(funcValue, 2);
+            optimalPoint.x = setPrecision(optimalPoint.x, 2);
+            optimalPoint.y = setPrecision(optimalPoint.y, 2);
+
+            funcValue = setPrecision(funcValue, 2);
+        }
+
+        if(status == singleLine){
+            funcValue = setPrecision(funcValue, 2);
+            optimalEdge.start.x = setPrecision(optimalEdge.start.x, 2);
+            optimalEdge.start.y = setPrecision(optimalEdge.start.y, 2);
+            optimalEdge.end.x = setPrecision(optimalEdge.end.x, 2);
+            optimalEdge.end.y = setPrecision(optimalEdge.end.y, 2);
+
+            funcValue = setPrecision(funcValue, 2);
         }
     }
 
@@ -191,8 +224,9 @@ public :
 
     inline point getPoint() const
     {
-        if(status == singlePoint)
+        if(status == singlePoint){
             return optimalPoint;
+        }
         else{
             DEBUGMSG("solution status can not match");
             exit(EXIT_FAILURE);
@@ -201,8 +235,9 @@ public :
 
     inline edge getEdge() const
     {
-        if(status == singleLine)
+        if(status == singleLine){
             return optimalEdge;
+        }
         else{
             DEBUGMSG("solution status can not match");
             exit(EXIT_FAILURE);

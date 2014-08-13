@@ -20,7 +20,7 @@ public:
 
     constraint getConstraint() const;
     QChar getSign() const;
-    
+    int getCode() const;
 private slots:
     void on_ensureButton_clicked();
     void on_cancelButton_clicked();
@@ -29,6 +29,7 @@ private:
     Ui::addConstraints *ui;
     constraint c;
     QChar sign;
+    int code;
 };
 
 #endif // ADDCONSTRAINTS_H

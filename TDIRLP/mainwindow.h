@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QTextEdit>
+#include <QDialog>
 
 #include "TDLP.h"
 #include "qcustomplot.h"
@@ -46,6 +47,8 @@ private slots:
      * @brief on_helpLinkButton_clicked do some help
      */
     void on_helpLinkButton_clicked();
+
+    void mouseMoveEvent(QMouseEvent *);
 
 private :
     /**

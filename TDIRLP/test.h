@@ -12,5 +12,6 @@ void testTDLP();
 
 void testFindMax();
 
+void testPre();
 
 #endif // TEST_H

@@ -53,6 +53,9 @@ void MainWindow::on_addConstraintButton_clicked()
     addC = new addConstraints(this);
     addC->exec();
 
+    if(addC->getCode() == 0)
+        return;
+
     constraint c = addC->getConstraint();
     QChar s = addC->getSign();
 
@@ -141,17 +144,21 @@ void MainWindow::on_solveButton_clicked()
     int index = ui->objFunSignComboBox->currentIndex();
     if(index == 1)
         fun.yCoef *= -1.0;
+
     tdlp->setObjFunc(fun);
 
     solution s = tdlp->solve();
 
-    QString fmt;
+    int count = ui->customplot->itemCount();
+    if(count > feasibleRegion->vertice.size())
+        ui->customplot->removeItem(count-1);
+
+    char* fmt = new char [1000];
     if(s.getStatus() == singlePoint){
-        fmt = "optimal solution is a point.\n";
-        fmt = fmt + QString("coordinate : (")
-                + QString::number(s.getPoint().x, 'g', '2') + QString(", ")
-                + QString::number(s.getPoint().y, 'g', '2') + QString(").\n");
-        fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
+        sprintf(fmt, "optimal solution is a point.\n");
+        sprintf(fmt, "%scoordinate : (", fmt);
+        sprintf(fmt, "%s%3.2f, %3.2f).\n", fmt, s.getPoint().x, s.getPoint().y);
+        sprintf(fmt, "%soptimal value : %3.2f.", fmt, s.getFuncValue());
 
         ui->customplot->clearGraphs();
         ui->customplot->addGraph();
@@ -173,13 +180,9 @@ void MainWindow::on_solveButton_clicked()
     if(s.getStatus() == singleLine){
         vertex start = s.getEdge().start, end = s.getEdge().end;
 
-        fmt = "optimal solution is a line.\n";
-        fmt = fmt + QString("from (") +
-                QString::number(start.x, 'g', '2') + QString(", ")
-                + QString::number(start.y, 'g', '2') + QString(") \nto (")
-                + QString::number(end.x, 'g', '2') + QString(", ")
-                + QString::number(end.y, 'g', '2') + QString(").\n");
-        fmt = fmt + QString("optimal value : ") + QString::number(s.getFuncValue(), 'g', '2');
+        sprintf(fmt, "optimal solution is a line.\n");
+        sprintf(fmt, "%sfrom (%3.2f, %3.2f)\nto (%3.2f, %3.2f)\n", fmt, start.x, start.y, end.x, end.y);
+        sprintf(fmt, "%soptimal value : %3.2f", fmt, s.getFuncValue());
 
 #if 0
         const int N = 2;
@@ -206,15 +209,18 @@ void MainWindow::on_solveButton_clicked()
     }
 
     if(s.getStatus() == unbounded){
-        fmt = QString("the feasible region is \nunbounded\n");
+        sprintf(fmt, "the feasible region is \nunbounded\n");
     }
 
     if(s.getStatus() == noSolution){
-        fmt = QString("the two dimensional \nlinear programme\n has feasible solution");
+        sprintf(fmt, "the two dimensional \nlinear programme\n has feasible solution");
     }
 
+
     ui->solutionLabel->clear();
-    ui->solutionLabel->setText(fmt);
+    ui->solutionLabel->setText(QString(fmt));
+
+    delete [] fmt;
 
     ui->customplot->replot();
 }
@@ -272,6 +278,13 @@ void MainWindow::on_exportResultButton_clicked()
      }
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent *)
+{
+    QString     msg;
+
+    msg = "zoom or drag the figure to check it detailly";
+    statusBar()->showMessage(msg);
+}
 
 void MainWindow::on_helpLinkButton_clicked()
 {
@@ -279,8 +292,9 @@ void MainWindow::on_helpLinkButton_clicked()
             "2. after adding all the constraints, please input the objective funtion in the left top panel.\n\n"
             "3. click solve button to get the answer of the linear programming.\n\n"
             "4. the result will be displayed in the result panel.\n\n"
-            "5. click export result button to save the problem and its answer to a specified file with pdf format.\n\n"
-            "6. click the clear button to clean all the items in the UI and then you can input a new problem";
+            "5. You can zoom or drag the figure to check it detailly.\n\n"
+            "6. click export result button to save the problem and its answer to a specified file with pdf format.\n\n"
+            "7. click the clear button to clean all the items in the UI and then you can input a new problem";
     QMessageBox::about(this, "help", helpText);
 }
 

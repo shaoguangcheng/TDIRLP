@@ -10,6 +10,7 @@
 
 using namespace std;
 
+
 /**
  * In this file, I define some useful data structure and variables.
  */

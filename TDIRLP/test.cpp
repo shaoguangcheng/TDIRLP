@@ -79,3 +79,10 @@ void testFindMax()
     cout << findMax(v,4,index) << endl;
     cout << index << endl;
 }
+
+void testPre()
+{
+    double x = -12.23213;
+    cout << exp(10,2) << endl;
+    cout << setPrecision(x,2) << endl;
+}
