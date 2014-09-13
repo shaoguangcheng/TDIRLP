@@ -21,6 +21,10 @@ Usage
 5. Click export result button to save the problem and its answer to a specified file with pdf format.
 6. Click the clear button to clean all the items in the UI and then you can input a new problem.
 
+Screenshot
+===========
+![screenshot](screenshot/screenshot.png)
+
 Platform 
 ===========
 This code is only tested on Linux mint-16 64-bit. But I will transplant the code to windows for my homework submission.
