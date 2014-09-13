@@ -24,6 +24,7 @@ Usage
 Screenshot
 ===========
 ![screenshot](screenshot/screenshot.png)
+*(note: the green region is feasible)*
 
 Platform 
 ===========
