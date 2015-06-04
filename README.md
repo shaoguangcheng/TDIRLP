@@ -30,7 +30,9 @@ Platform
 ===========
 This code is only tested on Linux mint-16 64-bit. But I will transplant the code to windows for my homework submission.
 
+<!--
 Contact 
 ===========
 If you have any question about this code, please contact me directly.
 E-mail : chengshaoguang@mail.nwpu.edu.cn
+-->
